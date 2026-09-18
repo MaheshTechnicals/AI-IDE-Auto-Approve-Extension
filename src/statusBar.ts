@@ -32,15 +32,15 @@ export class StatusBarController {
     if (enabled) {
       if (!safetyEnabled) {
         this.statusBarItem.text = '$(zap) Auto-Approve: ALL';
-        this.statusBarItem.tooltip = `Kiro Auto-Approve is ACTIVE in Full Autonomy mode (all commands/popups auto-approved).${statsSuffix}\n\nClick to Pause.`;
+        this.statusBarItem.tooltip = `Auto-Approve is ACTIVE in Full Autonomy mode (Kiro & Antigravity auto-approved).${statsSuffix}\n\nClick to Pause.`;
       } else {
         this.statusBarItem.text = '$(debug-pause) Auto-Approve: ON';
-        this.statusBarItem.tooltip = `Kiro Auto-Approve is ACTIVE with safety checks.${statsSuffix}\n\nClick to Pause.`;
+        this.statusBarItem.tooltip = `Auto-Approve is ACTIVE with safety checks (Kiro & Antigravity).${statsSuffix}\n\nClick to Pause.`;
       }
       this.statusBarItem.backgroundColor = undefined;
     } else {
       this.statusBarItem.text = '$(play) Auto-Approve: OFF';
-      this.statusBarItem.tooltip = `Kiro Auto-Approve is OFF.${statsSuffix}\n\nClick to Enable.`;
+      this.statusBarItem.tooltip = `Auto-Approve is OFF.${statsSuffix}\n\nClick to Enable.`;
       this.statusBarItem.backgroundColor = undefined;
     }
   }

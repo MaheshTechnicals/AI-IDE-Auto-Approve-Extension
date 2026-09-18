@@ -214,7 +214,10 @@ export function activate(context: vscode.ExtensionContext): void {
         e.affectsConfiguration('kiroAutoApprove.safetyEnabled') ||
         e.affectsConfiguration('kiroAutoApprove.pollIntervalSeconds') ||
         e.affectsConfiguration('kiroAutoApprove.getPendingCommandId') ||
-        e.affectsConfiguration('kiroAutoApprove.approveCommandId')
+        e.affectsConfiguration('kiroAutoApprove.approveCommandId') ||
+        e.affectsConfiguration('kiroAutoApprove.enableKiro') ||
+        e.affectsConfiguration('kiroAutoApprove.enableAntigravity') ||
+        e.affectsConfiguration('kiroAutoApprove.antigravityApproveCommands')
       ) {
         const isNowEnabled = newConfig.get<boolean>('enabled', false);
         const isSafety = newConfig.get<boolean>('safetyEnabled', false);

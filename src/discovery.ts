@@ -4,7 +4,7 @@ import { OutputLogger } from './logger';
 export async function discoverKiroCommands(logger: OutputLogger): Promise<void> {
   logger.show(true);
   logger.info('====================================================');
-  logger.info('   KIRO AUTO-APPROVE: DISCOVERY MODE (DEBUG)        ');
+  logger.info('   AUTO-APPROVE: DISCOVERY MODE (KIRO & ANTIGRAVITY)');
   logger.info('====================================================');
 
   try {
@@ -15,29 +15,43 @@ export async function discoverKiroCommands(logger: OutputLogger): Promise<void> 
       .filter((cmd) => cmd.toLowerCase().includes('kiro'))
       .sort();
 
+    const antigravityCommands = allCommands
+      .filter((cmd) => cmd.toLowerCase().includes('antigravity'))
+      .sort();
+
     const candidateCommands = allCommands
       .filter((cmd) => {
         const lower = cmd.toLowerCase();
         return (
           !lower.includes('kiro') &&
+          !lower.includes('antigravity') &&
           (lower.includes('approve') ||
             lower.includes('accept') ||
             lower.includes('pending') ||
             lower.includes('execution') ||
-            lower.includes('agent'))
+            lower.includes('agent') ||
+            lower.includes('terminal'))
         );
       })
       .sort();
 
     logger.info(`Found ${allCommands.length} total registered commands in the host editor.`);
     logger.info(`Found ${kiroCommands.length} command(s) matching "kiro":`);
-
     if (kiroCommands.length > 0) {
       kiroCommands.forEach((cmd, idx) => {
-        logger.info(`  [${idx + 1}] ${cmd}`);
+        logger.info(`  [Kiro ${idx + 1}] ${cmd}`);
       });
-    } else {
-      logger.warn('  No command IDs containing "kiro" were found.');
+    }
+
+    logger.info(`Found ${antigravityCommands.length} command(s) matching "antigravity":`);
+    if (antigravityCommands.length > 0) {
+      antigravityCommands.forEach((cmd, idx) => {
+        logger.info(`  [Antigravity ${idx + 1}] ${cmd}`);
+      });
+    }
+
+    if (kiroCommands.length === 0 && antigravityCommands.length === 0) {
+      logger.warn('  No command IDs containing "kiro" or "antigravity" were found.');
       logger.info('  Listing other candidate agent/approval commands found in the editor:');
       candidateCommands.slice(0, 50).forEach((cmd, idx) => {
         logger.info(`  [${idx + 1}] ${cmd}`);
@@ -49,15 +63,15 @@ export async function discoverKiroCommands(logger: OutputLogger): Promise<void> 
 
     // 2. Inspect extensions for programmatic exports
     logger.info('----------------------------------------------------');
-    logger.info('Inspecting extension exports for "kiro.kiroAgent" and related extensions:');
+    logger.info('Inspecting extension exports for Kiro and Antigravity:');
 
     const targetExtensions = vscode.extensions.all.filter((ext) => {
       const id = ext.id.toLowerCase();
-      return id.includes('kiro') || id.includes('agent');
+      return id.includes('kiro') || id.includes('antigravity') || id.includes('agent');
     });
 
     if (targetExtensions.length === 0) {
-      logger.info('No extensions found with "kiro" or "agent" in their extension ID.');
+      logger.info('No extensions found with "kiro", "antigravity", or "agent" in their ID.');
     } else {
       for (const ext of targetExtensions) {
         logger.info(`Found extension: ${ext.id} (active: ${ext.isActive}, version: ${ext.packageJSON?.version || 'unknown'})`);

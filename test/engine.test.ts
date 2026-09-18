@@ -19,12 +19,18 @@ describe('AutoApproveEngine Unit Tests', () => {
     logger.dispose();
   });
 
-  it('should provide default configurations', () => {
+  it('should provide default configurations including Antigravity and Kiro options', () => {
     const config = engine.getConfig();
     assert.strictEqual(typeof config.enabled, 'boolean');
     assert.strictEqual(typeof config.safetyEnabled, 'boolean');
     assert.ok(config.pollIntervalSeconds >= 1);
     assert.strictEqual(config.approveCommandId, 'kiroAgent.execution.runOrAcceptAll');
+    assert.strictEqual(config.enableKiro, true);
+    assert.strictEqual(config.enableAntigravity, true);
+    assert.ok(Array.isArray(config.antigravityApproveCommands));
+    assert.ok(config.antigravityApproveCommands.includes('antigravity.command.accept'));
+    assert.ok(config.antigravityApproveCommands.includes('antigravity.terminalCommand.run'));
+    assert.ok(config.antigravityApproveCommands.includes('antigravity.prioritized.agentAcceptAllInFile'));
   });
 
   it('should normalize pending items from various shapes', () => {
@@ -51,5 +57,72 @@ describe('AutoApproveEngine Unit Tests', () => {
     assert.strictEqual(engineAny.getItemId({ actionId: 'act-789' }), 'act-789');
     assert.strictEqual(engineAny.getItemId('simple-string-action'), 'simple-string-action');
     assert.strictEqual(engineAny.getItemId(null), '');
+  });
+
+  it('should trigger Antigravity native commands on pollAntigravityNative', async () => {
+    const vscode = require('vscode');
+    vscode.commands.executedCommands = [];
+
+    const engineAny = engine as unknown as {
+      pollAntigravityNative: (commands: string[], safetyEnabled: boolean) => Promise<void>;
+    };
+
+    await engineAny.pollAntigravityNative(
+      ['antigravity.command.accept', 'antigravity.terminalCommand.run'],
+      false
+    );
+
+    const executed = vscode.commands.executedCommands.map((c: { cmd: string }) => c.cmd);
+    assert.ok(executed.includes('antigravity.command.accept'));
+    assert.ok(executed.includes('antigravity.terminalCommand.run'));
+  });
+
+  it('should block execution if an Antigravity tool action is unsafe and safetyEnabled is true', async () => {
+    const vscode = require('vscode');
+    vscode.commands.executedCommands = [];
+
+    const engineAny = engine as unknown as {
+      getRecentAntigravityActions: () => Array<{ id: string; text: string; raw: unknown; status: string }>;
+      pollAntigravityNative: (commands: string[], safetyEnabled: boolean) => Promise<void>;
+    };
+
+    // Mock unsafe recent actions
+    engineAny.getRecentAntigravityActions = () => [
+      {
+        id: 'agy-test-1',
+        text: 'run_command sudo rm -rf /',
+        raw: { name: 'run_command', args: { CommandLine: 'sudo rm -rf /' } },
+        status: 'pending'
+      }
+    ];
+
+    await engineAny.pollAntigravityNative(['antigravity.terminalCommand.run'], true);
+
+    const executed = vscode.commands.executedCommands.map((c: { cmd: string }) => c.cmd);
+    assert.strictEqual(executed.includes('antigravity.terminalCommand.run'), false, 'Dangerous action must block execution');
+  });
+
+  it('should permit execution if an Antigravity tool action is safe', async () => {
+    const vscode = require('vscode');
+    vscode.commands.executedCommands = [];
+
+    const engineAny = engine as unknown as {
+      getRecentAntigravityActions: () => Array<{ id: string; text: string; raw: unknown; status: string }>;
+      pollAntigravityNative: (commands: string[], safetyEnabled: boolean) => Promise<void>;
+    };
+
+    engineAny.getRecentAntigravityActions = () => [
+      {
+        id: 'agy-test-2',
+        text: 'run_command npm test',
+        raw: { name: 'run_command', args: { CommandLine: 'npm test' } },
+        status: 'pending'
+      }
+    ];
+
+    await engineAny.pollAntigravityNative(['antigravity.terminalCommand.run'], true);
+
+    const executed = vscode.commands.executedCommands.map((c: { cmd: string }) => c.cmd);
+    assert.ok(executed.includes('antigravity.terminalCommand.run'));
   });
 });

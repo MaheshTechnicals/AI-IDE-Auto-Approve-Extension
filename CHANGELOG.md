@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2026-09-18
+
+### Added
+- **Google Antigravity IDE Integration**: Native dual-engine auto-approval support for both Kiro IDE and Google Antigravity IDE.
+- **Antigravity Execution Handlers**: Automatically triggers native Antigravity commands:
+  - `antigravity.command.accept`: Approves proposed agent commands.
+  - `antigravity.terminalCommand.run` / `antigravity.terminalCommand.accept`: Auto-runs terminal command confirmation prompts.
+  - `antigravity.prioritized.agentAcceptAllInFile` / `antigravity.prioritized.agentAcceptFocusedHunk`: Auto-accepts file diffs and edits.
+- **Antigravity Session Transcript Monitoring**: Inspects `~/.gemini/antigravity-ide/brain/<conv_id>/.system_generated/logs/transcript.jsonl` in real-time, extracting tool calls and validating safety.
+- **Multi-IDE Settings**: Added `kiroAutoApprove.enableKiro`, `kiroAutoApprove.enableAntigravity`, and `kiroAutoApprove.antigravityApproveCommands`.
+- **Discovery Mode for Antigravity**: `kiroAutoApprove.dumpAvailableCommands` now detects and inspects both `antigravity.*` and `kiro.*` commands and extension exports.
+- **Dual Tooltip & Counters**: Updated status bar tooltip to reflect dual autonomy across both Kiro and Antigravity.
+- Expanded automated unit tests to 74 tests covering Antigravity command dispatching and transcript security validation.
+
+---
+
 ## [0.2.3] - 2026-09-18
 
 ### Added

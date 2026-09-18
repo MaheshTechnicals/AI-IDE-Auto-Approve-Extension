@@ -112,6 +112,8 @@ export class SafetyChecker {
       const priorityKeys = [
         'command',
         'cmd',
+        'CommandLine',
+        'commandLine',
         'script',
         'shellCommand',
         'code',
@@ -127,6 +129,8 @@ export class SafetyChecker {
         'actionType',
         'title',
         'description',
+        'instruction',
+        'prompt',
         'message',
         'text',
         'content',

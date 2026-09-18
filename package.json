@@ -1,8 +1,8 @@
 {
   "name": "kiro-auto-approve",
-  "displayName": "Kiro Auto-Approve",
-  "description": "Safe auto-approval engine for Kiro IDE agent executions with zero screen automation and discovery-first architecture.",
-  "version": "0.2.3",
+  "displayName": "Kiro & Antigravity Auto-Approve",
+  "description": "Safe auto-approval engine for Kiro IDE and Google Antigravity AI agent workflows with zero screen automation.",
+  "version": "0.3.0",
   "publisher": "MaheshTechnicals",
   "author": "MaheshTechnicals",
   "license": "MIT",
@@ -18,6 +18,9 @@
   "keywords": [
     "kiro",
     "kiro-ide",
+    "antigravity",
+    "google-antigravity",
+    "antigravity-ide",
     "auto-approve",
     "ai",
     "agent",
@@ -133,6 +136,30 @@
           "minimum": 10,
           "maximum": 1000,
           "description": "Maximum number of recent actions retained in the in-memory activity log."
+        },
+        "kiroAutoApprove.enableKiro": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable native auto-approval monitoring for Kiro IDE."
+        },
+        "kiroAutoApprove.enableAntigravity": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable native auto-approval monitoring for Google Antigravity IDE (terminal commands, diffs, completions)."
+        },
+        "kiroAutoApprove.antigravityApproveCommands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "antigravity.command.accept",
+            "antigravity.terminalCommand.run",
+            "antigravity.terminalCommand.accept",
+            "antigravity.prioritized.agentAcceptAllInFile",
+            "antigravity.prioritized.agentAcceptFocusedHunk"
+          ],
+          "description": "Commands triggered to approve actions in Google Antigravity IDE."
         }
       }
     }

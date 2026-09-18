@@ -23,8 +23,12 @@ const mockVscode = {
     showInputBox: async () => undefined
   },
   commands: {
+    executedCommands: [],
     registerCommand: () => ({ dispose: () => {} }),
-    executeCommand: async () => undefined,
+    executeCommand: async (cmd, ...args) => {
+      mockVscode.commands.executedCommands.push({ cmd, args });
+      return undefined;
+    },
     getCommands: async () => []
   },
   workspace: {

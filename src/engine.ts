@@ -7,14 +7,22 @@ import { OutputLogger } from './logger';
 import { ExtensionConfig } from './types';
 import { StatusBarStats } from './statusBar';
 
-const DEFAULT_APPROVE_COMMAND = 'kiroAgent.execution.runOrAcceptAll';
+export const DEFAULT_APPROVE_COMMAND = 'kiroAgent.execution.runOrAcceptAll';
+export const DEFAULT_ANTIGRAVITY_COMMANDS: string[] = [
+  'antigravity.command.accept',
+  'antigravity.terminalCommand.run',
+  'antigravity.terminalCommand.accept',
+  'antigravity.prioritized.agentAcceptAllInFile',
+  'antigravity.prioritized.agentAcceptFocusedHunk'
+];
 const CACHE_VALIDITY_MS = 15000;
 
-interface KiroToolAction {
+interface ToolActionItem {
   id: string;
   text: string;
   raw: unknown;
   status: string;
+  source?: 'kiro' | 'antigravity';
 }
 
 export class AutoApproveEngine {
@@ -30,6 +38,8 @@ export class AutoApproveEngine {
   // Session caching for high-efficiency disk I/O
   private cachedSessionFile: string | null = null;
   private cachedSessionLastScan: number = 0;
+  private cachedAntigravityFile: string | null = null;
+  private cachedAntigravityLastScan: number = 0;
 
   constructor(
     safetyChecker: SafetyChecker,
@@ -52,7 +62,13 @@ export class AutoApproveEngine {
       bannedKeywords: config.get<string[]>('bannedKeywords', []),
       getPendingCommandId: config.get<string>('getPendingCommandId', '').trim(),
       approveCommandId: approveCmd || DEFAULT_APPROVE_COMMAND,
-      maxHistoryEntries: config.get<number>('maxHistoryEntries', 200)
+      maxHistoryEntries: config.get<number>('maxHistoryEntries', 200),
+      enableKiro: config.get<boolean>('enableKiro', true),
+      enableAntigravity: config.get<boolean>('enableAntigravity', true),
+      antigravityApproveCommands: config.get<string[]>(
+        'antigravityApproveCommands',
+        DEFAULT_ANTIGRAVITY_COMMANDS
+      )
     };
   }
 
@@ -66,7 +82,7 @@ export class AutoApproveEngine {
       return;
     }
 
-    const currentKey = `${config.pollIntervalSeconds}:${config.safetyEnabled}:${config.approveCommandId}:${config.getPendingCommandId}`;
+    const currentKey = `${config.pollIntervalSeconds}:${config.safetyEnabled}:${config.approveCommandId}:${config.getPendingCommandId}:${config.enableKiro}:${config.enableAntigravity}`;
     if (this.isRunning && this.timer && this.lastStartedConfigKey === currentKey) {
       return;
     }
@@ -76,8 +92,13 @@ export class AutoApproveEngine {
     this.lastStartedConfigKey = currentKey;
 
     const modeDesc = config.safetyEnabled ? 'Safety Check ON' : 'ALL APPROVED (No Restrictions / Full Autonomy)';
+    const targets = [
+      config.enableKiro ? 'Kiro IDE' : null,
+      config.enableAntigravity ? 'Google Antigravity' : null
+    ].filter(Boolean).join(' & ') || 'Custom';
+
     this.logger.info(
-      `Starting Auto-Approve loop (Interval: ${config.pollIntervalSeconds}s | Mode: ${modeDesc} | ApproveCmd: "${config.approveCommandId}")`
+      `Starting Auto-Approve loop (Interval: ${config.pollIntervalSeconds}s | Mode: ${modeDesc} | Targets: ${targets})`
     );
     this.onStateChange(true, config.safetyEnabled, this.logger.getStats());
 
@@ -157,14 +178,22 @@ export class AutoApproveEngine {
         return;
       }
 
-      const approveCmd = config.approveCommandId || DEFAULT_APPROVE_COMMAND;
-
       // Mode A: Explicit command configured for fetching pending items
       if (config.getPendingCommandId) {
+        const approveCmd = config.approveCommandId || DEFAULT_APPROVE_COMMAND;
         await this.pollWithCustomCommand(config.getPendingCommandId, approveCmd, config.safetyEnabled);
       } else {
-        // Mode B: Native Kiro IDE session & execution monitoring
-        await this.pollKiroNative(approveCmd, config.safetyEnabled);
+        // Mode B: Native Multi-IDE monitoring
+        // 1. Kiro IDE native session & execution monitoring
+        if (config.enableKiro) {
+          const kiroCmd = config.approveCommandId || DEFAULT_APPROVE_COMMAND;
+          await this.pollKiroNative(kiroCmd, config.safetyEnabled);
+        }
+
+        // 2. Google Antigravity IDE native transcript & commands monitoring
+        if (config.enableAntigravity) {
+          await this.pollAntigravityNative(config.antigravityApproveCommands, config.safetyEnabled);
+        }
       }
 
       this.onStateChange(config.enabled, config.safetyEnabled, this.logger.getStats());
@@ -301,6 +330,218 @@ export class AutoApproveEngine {
   }
 
   /**
+   * Evaluates recent Antigravity IDE tool calls and triggers native approval commands.
+   */
+  private async pollAntigravityNative(
+    antigravityCommands: string[],
+    safetyEnabled: boolean
+  ): Promise<void> {
+    const recentActions = this.getRecentAntigravityActions();
+
+    if (recentActions.length > 0) {
+      let anyUnsafe = false;
+
+      for (const action of recentActions) {
+        const actionId = action.id;
+
+        if (!this.processedActionIds.has(actionId)) {
+          this.processedActionIds.add(actionId);
+
+          if (this.processedActionIds.size > 500) {
+            const firstKey = this.processedActionIds.values().next().value;
+            if (firstKey) {
+              this.processedActionIds.delete(firstKey);
+            }
+          }
+
+          if (safetyEnabled) {
+            const safetyCheck = this.safetyChecker.check(action.text, true);
+
+            if (!safetyCheck.safe) {
+              this.skippedIds.add(actionId);
+              if (this.skippedIds.size > 500) {
+                const firstKey = this.skippedIds.values().next().value;
+                if (firstKey) {
+                  this.skippedIds.delete(firstKey);
+                }
+              }
+              this.logger.recordDecision(
+                'SKIPPED',
+                action.text,
+                `Banned pattern matched (Antigravity): ${safetyCheck.matchedPattern}`,
+                action.raw
+              );
+              anyUnsafe = true;
+            } else {
+              this.logger.recordDecision(
+                'APPROVED',
+                action.text,
+                'Passed safety check (Antigravity)',
+                action.raw
+              );
+            }
+          } else {
+            this.logger.recordDecision(
+              'APPROVED',
+              action.text,
+              'All Approved (Antigravity Full Autonomy)',
+              action.raw
+            );
+          }
+        } else if (safetyEnabled && this.skippedIds.has(actionId)) {
+          anyUnsafe = true;
+        }
+      }
+
+      if (anyUnsafe) {
+        return;
+      }
+    }
+
+    // Trigger Antigravity approval commands
+    const cmds =
+      Array.isArray(antigravityCommands) && antigravityCommands.length > 0
+        ? antigravityCommands
+        : DEFAULT_ANTIGRAVITY_COMMANDS;
+
+    for (const cmd of cmds) {
+      try {
+        await vscode.commands.executeCommand(cmd);
+      } catch {
+        // Ignored if not waiting or not registered
+      }
+    }
+  }
+
+  /**
+   * Resolves the active Antigravity brain sessions root directory cross-platform.
+   */
+  private getAntigravitySessionsRoot(): string | null {
+    const candidateDirs = [
+      path.join(os.homedir(), '.gemini', 'antigravity-ide', 'brain'),
+      process.env.APPDATA ? path.join(process.env.APPDATA, 'antigravity-ide', 'brain') : null,
+      process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'antigravity-ide', 'brain') : null
+    ].filter((dir): dir is string => dir !== null && fs.existsSync(dir));
+
+    return candidateDirs.length > 0 ? candidateDirs[0] : null;
+  }
+
+  /**
+   * Locates the active Antigravity session transcript.jsonl with smart caching.
+   */
+  private findActiveAntigravityTranscript(): string | null {
+    const now = Date.now();
+
+    if (this.cachedAntigravityFile && now - this.cachedAntigravityLastScan < CACHE_VALIDITY_MS) {
+      try {
+        if (fs.existsSync(this.cachedAntigravityFile)) {
+          return this.cachedAntigravityFile;
+        }
+      } catch {
+        this.cachedAntigravityFile = null;
+      }
+    }
+
+    const brainRoot = this.getAntigravitySessionsRoot();
+    if (!brainRoot) {
+      return null;
+    }
+
+    try {
+      let latestFile: string | null = null;
+      let latestMtime = 0;
+
+      const convDirs = fs.readdirSync(brainRoot);
+      for (const conv of convDirs) {
+        const tFile = path.join(brainRoot, conv, '.system_generated', 'logs', 'transcript.jsonl');
+        try {
+          if (fs.existsSync(tFile)) {
+            const mtime = fs.statSync(tFile).mtimeMs;
+            if (mtime > latestMtime) {
+              latestMtime = mtime;
+              latestFile = tFile;
+            }
+          }
+        } catch {}
+      }
+
+      if (latestFile) {
+        this.cachedAntigravityFile = latestFile;
+        this.cachedAntigravityLastScan = now;
+      }
+
+      return latestFile;
+    } catch (err) {
+      this.logger.warn(`Could not inspect Antigravity transcripts: ${String(err)}`);
+      return null;
+    }
+  }
+
+  /**
+   * Reads recent tool actions from the active Antigravity session.
+   */
+  private getRecentAntigravityActions(): ToolActionItem[] {
+    const activeFile = this.findActiveAntigravityTranscript();
+    if (!activeFile) {
+      return [];
+    }
+
+    let fd: number | null = null;
+    try {
+      const stat = fs.statSync(activeFile);
+      const readSize = Math.min(stat.size, 65536);
+      if (readSize === 0) {
+        return [];
+      }
+
+      fd = fs.openSync(activeFile, 'r');
+      const buffer = Buffer.alloc(readSize);
+      fs.readSync(fd, buffer, 0, readSize, Math.max(0, stat.size - readSize));
+
+      const actions: ToolActionItem[] = [];
+      const lines = buffer.toString('utf-8').trim().split('\n');
+
+      const startIndex = Math.max(0, lines.length - 25);
+      for (let i = lines.length - 1; i >= startIndex; i--) {
+        const line = lines[i].trim();
+        if (!line) {
+          continue;
+        }
+        try {
+          const data = JSON.parse(line);
+          if (Array.isArray(data.tool_calls) && data.tool_calls.length > 0) {
+            for (let idx = 0; idx < data.tool_calls.length; idx++) {
+              const tc = data.tool_calls[idx];
+              const tcName = String(tc.name || 'tool');
+              const displayText = SafetyChecker.extractText(tc);
+              const actionId = `agy-${data.step_index ?? data.created_at ?? 'step'}-${tcName}-${idx}`;
+              actions.push({
+                id: actionId,
+                text: displayText,
+                raw: tc,
+                status: data.status || 'pending',
+                source: 'antigravity'
+              });
+            }
+          }
+        } catch {}
+      }
+
+      return actions;
+    } catch (err) {
+      this.cachedAntigravityFile = null;
+      this.logger.warn(`Error reading Antigravity transcript: ${String(err)}`);
+      return [];
+    } finally {
+      if (fd !== null) {
+        try {
+          fs.closeSync(fd);
+        } catch {}
+      }
+    }
+  }
+
+  /**
    * Resolves the active Kiro sessions root directory cross-platform.
    */
   private getSessionsRoot(): string | null {
@@ -382,7 +623,7 @@ export class AutoApproveEngine {
    * Reads recent tool actions from the active session.
    * Uses safe try/finally to prevent file descriptor leaks.
    */
-  private getRecentKiroActions(): KiroToolAction[] {
+  private getRecentKiroActions(): ToolActionItem[] {
     const activeFile = this.findActiveSessionFile();
     if (!activeFile) {
       return [];
@@ -400,7 +641,7 @@ export class AutoApproveEngine {
       const buffer = Buffer.alloc(readSize);
       fs.readSync(fd, buffer, 0, readSize, Math.max(0, stat.size - readSize));
 
-      const actions: KiroToolAction[] = [];
+      const actions: ToolActionItem[] = [];
       const lines = buffer.toString('utf-8').trim().split('\n');
 
       // Inspect up to the last 25 lines
@@ -419,7 +660,8 @@ export class AutoApproveEngine {
               id: data.id || data.payload.toolCallId || String(data.timestamp),
               text: displayText,
               raw: data.payload,
-              status
+              status,
+              source: 'kiro'
             });
           }
         } catch {}

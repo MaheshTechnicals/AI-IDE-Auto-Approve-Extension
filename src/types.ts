@@ -25,6 +25,9 @@ export interface ExtensionConfig {
   getPendingCommandId: string;
   approveCommandId: string;
   maxHistoryEntries: number;
+  enableKiro: boolean;
+  enableAntigravity: boolean;
+  antigravityApproveCommands: string[];
 }
 
 export interface PendingActionCandidate {

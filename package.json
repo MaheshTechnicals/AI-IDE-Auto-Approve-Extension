@@ -1,0 +1,158 @@
+{
+  "name": "kiro-auto-approve",
+  "displayName": "Kiro Auto-Approve",
+  "description": "Safe auto-approval engine for Kiro IDE agent executions with zero screen automation and discovery-first architecture.",
+  "version": "0.2.1",
+  "publisher": "MaheshTechnicals",
+  "author": "MaheshTechnicals",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension.git"
+  },
+  "homepage": "https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension#readme",
+  "bugs": {
+    "url": "https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension/issues"
+  },
+  "keywords": [
+    "kiro",
+    "kiro-ide",
+    "auto-approve",
+    "ai",
+    "agent",
+    "automation",
+    "productivity",
+    "developer-tools"
+  ],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "kiroAutoApprove.toggle",
+        "title": "Kiro Auto-Approve: Toggle On/Off"
+      },
+      {
+        "command": "kiroAutoApprove.toggleSafety",
+        "title": "Kiro Auto-Approve: Toggle Safety Checks On/Off"
+      },
+      {
+        "command": "kiroAutoApprove.showHistory",
+        "title": "Kiro Auto-Approve: Show Recent Activity"
+      },
+      {
+        "command": "kiroAutoApprove.clearHistory",
+        "title": "Kiro Auto-Approve: Clear History"
+      },
+      {
+        "command": "kiroAutoApprove.addBannedKeyword",
+        "title": "Kiro Auto-Approve: Add Banned Keyword"
+      },
+      {
+        "command": "kiroAutoApprove.dumpAvailableCommands",
+        "title": "Kiro Auto-Approve: Discover Kiro Commands (Debug)"
+      },
+      {
+        "command": "kiroAutoApprove.openOutput",
+        "title": "Kiro Auto-Approve: Show Logs"
+      }
+    ],
+    "configuration": {
+      "title": "Kiro Auto-Approve",
+      "properties": {
+        "kiroAutoApprove.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable or disable automatic approval loop."
+        },
+        "kiroAutoApprove.safetyEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable safety checks. When false (default / Full Autonomy), all popups and commands are approved without any restrictions."
+        },
+        "kiroAutoApprove.pollIntervalSeconds": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "description": "Interval in seconds between checks for pending agent approval requests."
+        },
+        "kiroAutoApprove.bannedKeywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "\\brm\\s+.*(-[a-zA-Z]*r[a-zA-Z]*f|-[a-zA-Z]*f[a-zA-Z]*r|(-[a-zA-Z]*r[a-zA-Z]*\\s+.*-[a-zA-Z]*f)|(-[a-zA-Z]*f[a-zA-Z]*\\s+.*-[a-zA-Z]*r)|--recursive.*--force|--force.*--recursive)",
+            "\\bsudo\\b",
+            "\\bmkfs\\b",
+            "\\bdd\\s+if=",
+            "\\bformat\\b",
+            "\\bdel\\s+/s\\b",
+            "\\bshutdown\\b",
+            "\\breboot\\b",
+            "\\bpasswd\\b",
+            "curl.*\\|.*sh",
+            "wget.*\\|.*sh",
+            "chmod\\s+(-R\\s+)?777",
+            "git\\s+push\\s+.*--force",
+            "drop\\s+table",
+            "\\btruncate\\s+(table\\s+)?[a-zA-Z0-9_`\"\\[\\]]+",
+            "/dev/sd[a-z]",
+            "\\bregedit\\b",
+            "\\breg\\s+delete\\b",
+            "Remove-Item.*-Recurse.*-Force",
+            "Set-ExecutionPolicy\\s+Bypass",
+            "nc\\s+-e",
+            "/dev/tcp/"
+          ],
+          "description": "Regex patterns matching dangerous actions that must NEVER be auto-approved (case-insensitive)."
+        },
+        "kiroAutoApprove.getPendingCommandId": {
+          "type": "string",
+          "default": "",
+          "description": "Command ID used to fetch pending executions. Leave empty for automatic Kiro session monitoring, or specify a custom command ID."
+        },
+        "kiroAutoApprove.approveCommandId": {
+          "type": "string",
+          "default": "kiroAgent.execution.runOrAcceptAll",
+          "description": "Command ID used to approve pending executions. Defaults to Kiro IDE's native 'kiroAgent.execution.runOrAcceptAll'."
+        },
+        "kiroAutoApprove.maxHistoryEntries": {
+          "type": "number",
+          "default": 200,
+          "minimum": 10,
+          "maximum": 1000,
+          "description": "Maximum number of recent actions retained in the in-memory activity log."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "compile": "tsc -p ./",
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "lint": "tsc --noEmit",
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts'",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.24.0",
+    "esbuild": "^0.20.0",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}

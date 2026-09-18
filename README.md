@@ -1,147 +1,153 @@
-# Kiro Auto-Approve
+<div align="center">
 
-**Kiro Auto-Approve** is a high-reliability, zero-screen-automation VS Code extension built specifically for **Kiro IDE** (a VS Code fork).
+# ⚡ Kiro Auto-Approve Extension
 
-It monitors Kiro's AI-agent approval queue on a configurable interval and automatically approves safe pending actions while **strictly refusing** to auto-approve dangerous commands (privilege escalation, filesystem destruction, arbitrary remote scripts, reverse shells, force pushes, database drops, etc.).
+**The ultra-fast, 100% native auto-approval extension for Kiro IDE AI Agent workflows.**
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.2.1-green.svg)](package.json)
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension)
+[![Engine](https://img.shields.io/badge/VS%20Code%20%2F%20Kiro-%5E1.85.0-blueviolet.svg)](package.json)
+[![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen.svg)](test/safety.test.ts)
 
-## 🛡️ Safety Model (Non-Negotiables)
-
-1. **Zero Screen Automation / Zero OCR**:
-   - The extension works **strictly through the native VS Code / Kiro Extension Host API**.
-   - No mouse clicks, no pixel coordinates, no keyboard simulation, and no OCR.
-   - Operates identically across Windows, macOS, Linux, SSH Remote, WSL, and headless/VNC desktop environments.
-
-2. **Always-Active Denylist**:
-   - Every single pending action is evaluated against a security denylist before approval.
-   - The safety check cannot be disabled or bypassed.
-   - If **any** banned pattern matches, the action is marked **SKIPPED**, logged with the matching pattern, and left untouched for human review.
-
-3. **Safe by Default**:
-   - On installation, the extension is **OFF / Disabled**.
-   - Auto-approval will not start until:
-     - The user has configured valid command IDs for fetching pending actions and approving them.
-     - The user explicitly toggles it ON via the status bar or command palette.
+</div>
 
 ---
 
-## 🚨 Default Banned Patterns
+## 🌟 Overview
 
-The default denylist (`kiroAutoApprove.bannedKeywords`) blocks commands matching these patterns (case-insensitive):
+**Kiro Auto-Approve** is a specialized VS Code extension engineered specifically for **Kiro IDE** (the AI-first VS Code fork).
 
-| Target Threat | Detected Patterns |
-|---|---|
-| **Filesystem Wipe** | `rm -rf`, `rm --recursive --force`, `del /s`, `Remove-Item ... -Recurse -Force` |
-| **Drive / Disk Format** | `mkfs`, `dd if=`, `format`, writes to `/dev/sd*` |
-| **Privilege Escalation** | `sudo`, `passwd`, `Set-ExecutionPolicy Bypass` |
-| **Remote Script Execution** | `curl ... \| sh`, `wget ... \| sh`, `curl ... \| bash` |
-| **System State Alteration** | `shutdown`, `reboot`, `regedit`, `reg delete` |
-| **Broad Permissions** | `chmod -R 777`, `chmod 777` |
-| **VCS Force Push** | `git push ... --force`, `--force-with-lease` |
-| **Database Destruction** | `DROP TABLE`, `TRUNCATE` |
-| **Reverse Shells & Sockets** | `nc -e`, `/dev/tcp/` |
-
-You can add additional patterns using the command **"Kiro Auto-Approve: Add Banned Keyword"** or through VS Code Settings.
+During active AI coding sessions, Kiro regularly prompts the user to confirm terminal executions, file modifications, tool calls, and API fetches. **Kiro Auto-Approve** runs a lightweight native background loop that automatically approves these requests in real-time, eliminating interruptions while maintaining complete user control.
 
 ---
 
-## 🚀 Step-by-Step First-Run Guide
+## 🚀 Key Features
 
-Because Kiro IDE is under active development and command IDs may evolve between releases, this extension uses a **discovery-first architecture**:
-
-### Step 1: Run Discovery Mode
-1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
-2. Run **`Kiro Auto-Approve: Discover Kiro Commands (Debug)`**.
-3. The extension opens the **"Kiro Auto-Approve"** Output Channel and prints:
-   - All registered commands containing `kiro`
-   - Other candidate approval/agent commands
-   - Programmatic exports and top-level methods from `kiro.kiroAgent`
-
-### Step 2: Identify Your Kiro Version's Command IDs
-From the Output Channel, note the two command IDs:
-1. **Fetch Command ID**: The command that retrieves pending actions (e.g. `kiro.agent.getPendingExecutions` or similar).
-2. **Approval Command ID**: The command that accepts/approves an execution (e.g. `kiro.agent.approveExecution` or similar).
-
-### Step 3: Paste into Settings
-1. Open Settings (`Ctrl+,` or `Cmd+,`) and search for **`Kiro Auto-Approve`**.
-2. Set **`kiroAutoApprove.getPendingCommandId`** to your fetch command ID.
-3. Set **`kiroAutoApprove.approveCommandId`** to your approve command ID.
-
-### Step 4: Turn Auto-Approve ON
-1. Click the status bar item on the bottom right (`$(play) Auto-Approve: OFF`).
-2. The item changes to `$(debug-pause) Auto-Approve: ON`.
-3. The extension now polls on your configured interval (default: every 2 seconds) and automatically approves safe actions!
+- ⚡ **Zero Screen Automation / No OCR**: Works 100% through native extension host APIs and internal Kiro execution handlers. Zero mouse simulation, zero pixel scraping, zero OCR delays. Works reliably over VNC, SSH remote, WSL, or background headless servers.
+- 🔓 **Full Autonomy / Unrestricted Mode**: Auto-approves all agent tool calls, commands, and popups immediately without restrictions.
+- 🛡️ **Optional Security Denylist**: When safety mode is enabled, pending actions are evaluated against a configurable regex denylist covering destructive operations (`rm -rf`, `sudo`, `mkfs`, `format`, `curl | sh`, `drop table`, reverse shells).
+- 🔍 **Discovery-First Architecture**: Built-in discovery command (`kiroAutoApprove.dumpAvailableCommands`) that dynamically enumerates registered Kiro commands and extension exports.
+- 🖥️ **Status Bar Controller**: Visual indicator on the bottom status bar with one-click toggling (`$(zap) Auto-Approve: ALL` / `$(play) Auto-Approve: OFF`).
+- 📜 **Audit History**: In-memory activity log with interactive QuickPick review to inspect recent actions with timestamps and payloads.
 
 ---
 
-## ⚙️ Extension Settings
+## 📦 Quick Installation
+
+### Option 1: Install Pre-built `.vsix`
+1. Download the latest `kiro-auto-approve-0.2.1.vsix` from the [Releases](https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension/releases) page (or from this repository root).
+2. Open **Kiro IDE**.
+3. Open the Extensions sidebar (`Ctrl+Shift+X` or `Cmd+Shift+X`).
+4. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions pane.
+5. Select **"Install from VSIX..."** and choose `kiro-auto-approve-0.2.1.vsix`.
+6. Reload the window (`Developer: Reload Window`).
+
+### Option 2: Build & Install via CLI
+```bash
+# Clone the repository
+git clone https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension.git
+cd kiro-Auto-Approve-Extension
+
+# Install dependencies and build bundle
+npm install
+npm run build
+
+# Package VSIX
+npx @vscode/vsce package --no-dependencies
+
+# Install directly into Kiro
+kiro --install-extension kiro-auto-approve-0.2.1.vsix --force
+```
+
+---
+
+## 🎯 How to Use
+
+1. **Activate / Pause**:
+   Click the status bar item in the bottom right corner:
+   - `⚡ Auto-Approve: ALL (No Restrictions)` — Currently active. Every popup/command is approved automatically.
+   - `▶ Auto-Approve: OFF` — Currently paused.
+
+2. **Toggle Safety Mode**:
+   Open the Command Palette (`Ctrl+Shift+P`) and run:
+   ```text
+   Kiro Auto-Approve: Toggle Safety Checks On/Off
+   ```
+
+3. **View Activity Logs**:
+   - Run `Kiro Auto-Approve: Show Recent Activity` to open an interactive modal listing recent approvals.
+   - Run `Kiro Auto-Approve: Show Logs` to open the dedicated Output channel.
+
+---
+
+## ⚙️ Configuration Reference
+
+Accessible via `Settings > Extensions > Kiro Auto-Approve`:
 
 | Setting | Type | Default | Description |
 |---|---|---|---|
-| `kiroAutoApprove.enabled` | `boolean` | `false` | Enable or disable automatic approval loop. |
-| `kiroAutoApprove.pollIntervalSeconds` | `number` | `2` (min: `1`) | Seconds between checks for pending approval requests. |
-| `kiroAutoApprove.getPendingCommandId` | `string` | `""` | Command ID to fetch pending actions. |
-| `kiroAutoApprove.approveCommandId` | `string` | `""` | Command ID to approve a pending action. |
-| `kiroAutoApprove.bannedKeywords` | `string[]` | *(See table above)* | Regex patterns that immediately block auto-approval. |
-| `kiroAutoApprove.maxHistoryEntries` | `number` | `200` | Number of recent approval/skip actions kept in memory. |
+| `kiroAutoApprove.enabled` | `boolean` | `true` | Master switch for the auto-approval polling loop. |
+| `kiroAutoApprove.safetyEnabled` | `boolean` | `false` | When `false` (Full Autonomy), all commands and popups are approved without restriction. When `true`, runs denylist checks. |
+| `kiroAutoApprove.pollIntervalSeconds` | `number` | `2` | Polling frequency in seconds (minimum: 1s). |
+| `kiroAutoApprove.approveCommandId` | `string` | `kiroAgent.execution.runOrAcceptAll` | Native Kiro command executed to confirm pending actions. |
+| `kiroAutoApprove.getPendingCommandId` | `string` | `""` | Optional command ID to fetch pending items. Leave empty for automatic session monitoring. |
+| `kiroAutoApprove.bannedKeywords` | `string[]` | *(See safety list)* | Regex patterns that block execution when safety check is enabled. |
+| `kiroAutoApprove.maxHistoryEntries` | `number` | `200` | Number of recent activity records kept in memory. |
 
 ---
 
-## ⌨️ Registered Commands
+## ⌨️ Command Palette Reference
 
-| Command | Title | Action |
+| Command ID | Title | Description |
 |---|---|---|
-| `kiroAutoApprove.toggle` | *Kiro Auto-Approve: Toggle On/Off* | Toggles active state between ON and OFF. |
-| `kiroAutoApprove.showHistory` | *Kiro Auto-Approve: Show Recent Activity* | Displays recent decisions in an interactive QuickPick modal. |
-| `kiroAutoApprove.clearHistory` | *Kiro Auto-Approve: Clear History* | Resets in-memory decision history. |
-| `kiroAutoApprove.addBannedKeyword` | *Kiro Auto-Approve: Add Banned Keyword* | Prompts for a regex pattern and appends it to settings. |
-| `kiroAutoApprove.dumpAvailableCommands` | *Kiro Auto-Approve: Discover Kiro Commands (Debug)* | Enumerates all Kiro/Agent commands and exports. |
-| `kiroAutoApprove.openOutput` | *Kiro Auto-Approve: Show Logs* | Reveals the dedicated "Kiro Auto-Approve" Output channel. |
+| `kiroAutoApprove.toggle` | `Kiro Auto-Approve: Toggle On/Off` | Toggles the approval loop ON or OFF. |
+| `kiroAutoApprove.toggleSafety` | `Kiro Auto-Approve: Toggle Safety Checks On/Off` | Switches between Full Autonomy and Safety Denylist modes. |
+| `kiroAutoApprove.showHistory` | `Kiro Auto-Approve: Show Recent Activity` | Opens a QuickPick viewer to inspect past decisions. |
+| `kiroAutoApprove.clearHistory` | `Kiro Auto-Approve: Clear History` | Clears the in-memory decision history log. |
+| `kiroAutoApprove.addBannedKeyword` | `Kiro Auto-Approve: Add Banned Keyword` | Prompts for a regex pattern and appends it to configuration. |
+| `kiroAutoApprove.dumpAvailableCommands`| `Kiro Auto-Approve: Discover Kiro Commands (Debug)` | Discovers all editor commands containing `kiro` or agent keywords. |
+| `kiroAutoApprove.openOutput` | `Kiro Auto-Approve: Show Logs` | Displays the output log stream in the Output panel. |
 
 ---
 
-## 💻 Development & Testing
+## 🏗️ Architecture
 
-### 1. Install Dependencies
-```bash
-npm install
+```mermaid
+flowchart TD
+    A[Kiro IDE Agent Session] -->|Emits Tool Actions / Popups| B[Kiro Internal Event Queue]
+    C[AutoApproveEngine Poller] -->|Every N Seconds| D{Is Enabled?}
+    D -- No --> E[Idle / Paused]
+    D -- Yes --> F{Is Safety Enabled?}
+    F -- No (Full Autonomy) --> G[Execute kiroAgent.execution.runOrAcceptAll]
+    F -- Yes --> H[SafetyChecker Regex Denylist]
+    H -- Unsafe Match --> I[Log SKIPPED & Block Approval]
+    H -- Safe --> G
+    G --> J[Record to History Log & Output Channel]
 ```
 
-### 2. Run Automated Safety Tests
+---
+
+## 🧪 Development & Testing
+
 ```bash
+# Run unit tests (54 test cases covering all regex rules and extraction payloads)
 npm test
-```
-Runs the Mocha test suite verifying that all dangerous patterns are strictly blocked and benign commands are allowed.
 
-### 3. Build Extension Bundle
-```bash
+# Run linter / typecheck
+npm run lint
+
+# Build production bundle via esbuild
 npm run build
-```
-Uses `esbuild` to produce a fast, bundled, self-contained `dist/extension.js`.
 
-### 4. Run in Extension Development Host (`F5`)
-1. Open this folder in VS Code or Kiro IDE.
-2. Press **`F5`** (or go to **Run and Debug** and select **"Run Extension (Kiro / VS Code)"**).
-3. A new Extension Development Host window will launch with the extension active.
+# Watch mode for extension development
+npm run watch
+```
+
+Press **`F5`** inside VS Code / Kiro IDE to launch an Extension Development Host with live breakpoints and debugging.
 
 ---
 
-## 📦 Packaging to `.vsix`
+## 📄 License
 
-To build an offline `.vsix` installer package for permanent installation:
-
-```bash
-# Package with vsce (skips checking git repo root if needed)
-npx @vscode/vsce package --no-git-tag-version --no-dependencies
-```
-
-This creates `kiro-auto-approve-0.1.0.vsix`.
-
-### To install in Kiro / VS Code:
-1. Open Kiro IDE.
-2. Go to the **Extensions view** (`Ctrl+Shift+X` or `Cmd+Shift+X`).
-3. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions pane.
-4. Select **"Install from VSIX..."**.
-5. Pick `kiro-auto-approve-0.1.0.vsix`.
-# kiro-Auto-Approve-Extension
+This project is licensed under the [MIT License](LICENSE).

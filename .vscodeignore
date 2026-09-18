@@ -1,0 +1,9 @@
+.vscode/**
+src/**
+test/**
+.gitignore
+tsconfig.json
+esbuild.js
+prd.md
+node_modules/**
+*.vsix

@@ -123,8 +123,21 @@ export class AutoApproveEngine {
 
     if (config.enableAntigravity) {
       try {
-        AntigravityStateManager.ensureGlobalPermissions();
-      } catch {}
+        const syncResult = AntigravityStateManager.ensureGlobalPermissions();
+        if (syncResult.success) {
+          if (syncResult.addedCount > 0) {
+            this.logger.info(
+              `Antigravity IDE: Injected ${syncResult.addedCount} autonomous permissions into state.vscdb (Total: ${syncResult.totalCount}).`
+            );
+          } else {
+            this.logger.info(
+              `Antigravity IDE: Autonomous permissions verified in state.vscdb (${syncResult.totalCount} active).`
+            );
+          }
+        }
+      } catch (err) {
+        this.logger.warn(`Could not sync Antigravity IDE permissions: ${String(err)}`);
+      }
     }
 
     this.logger.info(

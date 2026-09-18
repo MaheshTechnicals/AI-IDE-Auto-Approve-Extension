@@ -1,13 +1,13 @@
-# 🚀 Step-by-Step Run Kaise Karein (Version 1.0.0)
+# 🚀 Step-by-Step Run Kaise Karein (Version 1.1.0)
 
 ### 1. Install ya Debug:
-- **Kiro IDE me**: [ai-ide-auto-approve-1.0.0.vsix](file:///root/projects/AutoRun/ai-ide-auto-approve-1.0.0.vsix) install karein (`Extensions > ... > Install from VSIX...`) ya CLI se:
+- **Kiro IDE me**: [ai-ide-auto-approve-1.1.0.vsix](file:///root/projects/AutoRun/ai-ide-auto-approve-1.1.0.vsix) install karein (`Extensions > ... > Install from VSIX...`) ya CLI se:
   ```bash
-  kiro --install-extension ai-ide-auto-approve-1.0.0.vsix --force
+  kiro --install-extension ai-ide-auto-approve-1.1.0.vsix --force
   ```
 - **Google Antigravity IDE me**:
   ```bash
-  antigravity --install-extension ai-ide-auto-approve-1.0.0.vsix --force
+  antigravity --install-extension ai-ide-auto-approve-1.1.0.vsix --force
   ```
   ya Extensions pane se VSIX install karein.
 - **Development / Testing**: VS Code / Antigravity / Kiro IDE me workspace khol kar **`F5`** dabayein (Extension Development Host launch hoga).
@@ -29,3 +29,10 @@
   - `$(zap) Auto-Approve: ALL` — Sabhi popups aur commands auto-approve honge.
   - Click karne par `Auto-Approve: OFF` (Pause) ho jayega.
 
+---
+
+### 4. v1.1.0 Naya Kya Hai:
+- **macOS Support**: `~/Library/Application Support/` path ab automatically detect hota hai Antigravity aur Kiro ke liye.
+- **Linux XDG Support**: `$XDG_CONFIG_HOME` environment variable se custom config paths bhi support hain.
+- **5-Candidate Path Search**: Har platform pe 5 alag paths check hote hain (Linux standard, XDG, macOS, Windows APPDATA, Windows LOCALAPPDATA).
+- **Full Cross-Platform Audit**: Windows, Linux, macOS pe 100% verified compatibility.

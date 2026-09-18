@@ -483,8 +483,15 @@ export class AutoApproveEngine {
    */
   private getAntigravitySessionsRoot(): string | null {
     const candidateDirs = [
+      // Linux / macOS (standard)
       path.join(os.homedir(), '.gemini', 'antigravity-ide', 'brain'),
+      // macOS (Application Support)
+      path.join(os.homedir(), 'Library', 'Application Support', 'antigravity-ide', 'brain'),
+      // Linux (XDG_CONFIG_HOME)
+      process.env.XDG_CONFIG_HOME ? path.join(process.env.XDG_CONFIG_HOME, 'antigravity-ide', 'brain') : null,
+      // Windows (APPDATA)
       process.env.APPDATA ? path.join(process.env.APPDATA, 'antigravity-ide', 'brain') : null,
+      // Windows (LOCALAPPDATA)
       process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'antigravity-ide', 'brain') : null
     ].filter((dir): dir is string => dir !== null && fs.existsSync(dir));
 
@@ -611,8 +618,15 @@ export class AutoApproveEngine {
    */
   private getSessionsRoot(): string | null {
     const candidateDirs = [
+      // Linux / macOS (standard)
       path.join(os.homedir(), '.kiro', 'sessions'),
+      // macOS (Application Support)
+      path.join(os.homedir(), 'Library', 'Application Support', 'Kiro', 'sessions'),
+      // Linux (XDG_CONFIG_HOME)
+      process.env.XDG_CONFIG_HOME ? path.join(process.env.XDG_CONFIG_HOME, 'Kiro', 'sessions') : null,
+      // Windows (APPDATA)
       process.env.APPDATA ? path.join(process.env.APPDATA, 'Kiro', 'sessions') : null,
+      // Windows (LOCALAPPDATA)
       process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'Programs', 'Kiro', 'sessions') : null
     ].filter((dir): dir is string => dir !== null && fs.existsSync(dir));
 

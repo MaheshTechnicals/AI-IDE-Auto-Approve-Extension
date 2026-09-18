@@ -2,7 +2,7 @@
   "name": "ai-ide-auto-approve",
   "displayName": "AI IDE Auto-Approve Extension",
   "description": "Universal autonomous auto-approval extension for AI IDEs (Kiro IDE, Google Antigravity IDE, VS Code). Automatically executes and approves terminal commands, file diffs, and agent proposals with zero interruptions.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "publisher": "MaheshTechnicals",
   "author": "MaheshTechnicals",
   "license": "MIT",

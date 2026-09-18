@@ -7,7 +7,7 @@
 **The universal, ultra-fast, 100% native auto-approval extension for AI-powered IDEs (Kiro IDE, Google Antigravity IDE, VS Code).**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-1.1.0-green.svg)](package.json)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension)
 [![Engine](https://img.shields.io/badge/VS%20Code%20%2F%20Kiro%20%2F%20Antigravity-%5E1.85.0-blueviolet.svg)](package.json)
 [![Tests](https://img.shields.io/badge/tests-80%20passing-brightgreen.svg)](test/antigravityState.test.ts)
@@ -42,14 +42,14 @@ In **Google Antigravity IDE**, it directly synchronizes with the native Unified 
 ## 📦 Quick Installation
 
 ### Option 1: Install Pre-built `.vsix` in Kiro IDE
-1. Download [ai-ide-auto-approve-1.0.0.vsix](file:///root/projects/AutoRun/ai-ide-auto-approve-1.0.0.vsix).
+1. Download [ai-ide-auto-approve-1.1.0.vsix](file:///root/projects/AutoRun/ai-ide-auto-approve-1.1.0.vsix).
 2. In **Kiro IDE**, open Extensions (`Ctrl+Shift+X`).
-3. Click `...` > **"Install from VSIX..."** and select `ai-ide-auto-approve-1.0.0.vsix`.
+3. Click `...` > **"Install from VSIX..."** and select `ai-ide-auto-approve-1.1.0.vsix`.
 
 ### Option 2: Install in Google Antigravity IDE
 Run via CLI:
 ```bash
-antigravity --install-extension ai-ide-auto-approve-1.0.0.vsix --force
+antigravity --install-extension ai-ide-auto-approve-1.1.0.vsix --force
 ```
 Or install directly via Extensions sidebar in Antigravity IDE.
 
@@ -67,8 +67,8 @@ npm run build
 npx @vscode/vsce package --no-dependencies
 
 # Install directly into Kiro or Antigravity
-kiro --install-extension ai-ide-auto-approve-1.0.0.vsix --force
-antigravity --install-extension ai-ide-auto-approve-1.0.0.vsix --force
+kiro --install-extension ai-ide-auto-approve-1.1.0.vsix --force
+antigravity --install-extension ai-ide-auto-approve-1.1.0.vsix --force
 ```
 
 ---

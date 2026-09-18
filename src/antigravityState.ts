@@ -292,10 +292,19 @@ export class AntigravityStateManager {
    */
   public static getDatabasePath(): string | null {
     const candidates = [
+      // Linux (standard)
       path.join(os.homedir(), '.config', 'Antigravity IDE', 'User', 'globalStorage', 'state.vscdb'),
+      // Linux (XDG_CONFIG_HOME override)
+      process.env.XDG_CONFIG_HOME
+        ? path.join(process.env.XDG_CONFIG_HOME, 'Antigravity IDE', 'User', 'globalStorage', 'state.vscdb')
+        : null,
+      // macOS (Application Support)
+      path.join(os.homedir(), 'Library', 'Application Support', 'Antigravity IDE', 'User', 'globalStorage', 'state.vscdb'),
+      // Windows (APPDATA)
       process.env.APPDATA
         ? path.join(process.env.APPDATA, 'Antigravity IDE', 'User', 'globalStorage', 'state.vscdb')
         : null,
+      // Windows (LOCALAPPDATA)
       process.env.LOCALAPPDATA
         ? path.join(process.env.LOCALAPPDATA, 'Antigravity IDE', 'User', 'globalStorage', 'state.vscdb')
         : null

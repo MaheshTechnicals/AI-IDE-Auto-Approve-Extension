@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.2] - 2026-09-18
+
+### Added
+- Comprehensive test suite covering engine lifecycle, configuration fallbacks, normalization, and logger history management (64 automated tests).
+- Added "Copy Content" action to Recent Activity QuickPick modal for quick clipboard export.
+- Cross-platform Kiro session directory resolver supporting Linux, macOS, and Windows (%APPDATA% / %LOCALAPPDATA%).
+
+### Fixed
+- Guaranteed zero file-descriptor leaks in session log reading using `try ... finally` blocks.
+- Active session caching system drastically reducing filesystem disk I/O during 2-second polling cycles.
+- Multi-tool parallel execution inspection: checks the entire batch of pending tool calls to prevent any unsafe command from executing during multi-action prompts.
+- Prevented double-polling race condition when starting or toggling the engine.
+
+---
+
 ## [0.2.1] - 2026-09-18
 
 ### Fixed

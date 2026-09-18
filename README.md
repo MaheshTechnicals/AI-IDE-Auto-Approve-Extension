@@ -7,10 +7,10 @@
 **The ultra-fast, 100% native auto-approval extension for Kiro IDE AI Agent workflows.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.1-green.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-0.2.2-green.svg)](package.json)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension)
 [![Engine](https://img.shields.io/badge/VS%20Code%20%2F%20Kiro-%5E1.85.0-blueviolet.svg)](package.json)
-[![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen.svg)](test/safety.test.ts)
+[![Tests](https://img.shields.io/badge/tests-64%20passing-brightgreen.svg)](test/safety.test.ts)
 
 </div>
 

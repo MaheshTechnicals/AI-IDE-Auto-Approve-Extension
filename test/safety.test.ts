@@ -138,10 +138,46 @@ describe('SafetyChecker Tests', () => {
       assert.strictEqual(result.safe, false);
     });
 
+    it('should handle circular object references gracefully in extractText', () => {
+      const circularObj: Record<string, unknown> = { command: 'echo hello' };
+      circularObj.self = circularObj;
+      assert.doesNotThrow(() => {
+        const text = SafetyChecker.extractText(circularObj);
+        assert.ok(text.includes('echo hello'));
+      });
+    });
+
+    it('should never false-positive on English words like "truncated"', () => {
+      const normalTexts = [
+        'Output was truncated due to buffer limit',
+        'Check the drawable folder count/full listing (previous listing truncated)',
+        'Automatically truncating long lines for display'
+      ];
+      for (const text of normalTexts) {
+        const result = checker.check(text, true);
+        assert.strictEqual(result.safe, true, `Expected "${text}" not to be blocked by truncate rule`);
+      }
+    });
+
+    it('should block real SQL truncate statements', () => {
+      const sqlStatements = [
+        'TRUNCATE users;',
+        'truncate table orders',
+        'TRUNCATE TABLE `accounts`',
+        'truncate [logs]'
+      ];
+      for (const sql of sqlStatements) {
+        const result = checker.check(sql, true);
+        assert.strictEqual(result.safe, false, `Expected "${sql}" to be blocked as unsafe`);
+      }
+    });
+
     it('should handle empty or null texts safely', () => {
       assert.strictEqual(checker.check('').safe, true);
       assert.strictEqual(SafetyChecker.extractText(null), '');
       assert.strictEqual(SafetyChecker.extractText(undefined), '');
+      assert.strictEqual(SafetyChecker.extractText(123), '123');
+      assert.strictEqual(SafetyChecker.extractText(true), 'true');
     });
   });
 });

@@ -7,6 +7,7 @@ import { OutputLogger } from './logger';
 import { ExtensionConfig } from './types';
 
 const DEFAULT_APPROVE_COMMAND = 'kiroAgent.execution.runOrAcceptAll';
+const CACHE_VALIDITY_MS = 15000;
 
 interface KiroToolAction {
   id: string;
@@ -18,11 +19,16 @@ interface KiroToolAction {
 export class AutoApproveEngine {
   private timer: NodeJS.Timeout | null = null;
   private isPolling: boolean = false;
+  private isRunning: boolean = false;
   private safetyChecker: SafetyChecker;
   private logger: OutputLogger;
   private onStateChange: (enabled: boolean, safetyEnabled: boolean) => void;
   private skippedIds: Set<string> = new Set();
   private processedActionIds: Set<string> = new Set();
+
+  // Session caching for high-efficiency disk I/O
+  private cachedSessionFile: string | null = null;
+  private cachedSessionLastScan: number = 0;
 
   constructor(
     safetyChecker: SafetyChecker,
@@ -49,15 +55,24 @@ export class AutoApproveEngine {
     };
   }
 
+  private lastStartedConfigKey: string = '';
+
   public start(): void {
-    this.stop();
     const config = this.getConfig();
 
     if (!config.enabled) {
-      this.logger.info('Auto-Approve is OFF. Polling stopped.');
-      this.onStateChange(false, config.safetyEnabled);
+      this.stop();
       return;
     }
+
+    const currentKey = `${config.pollIntervalSeconds}:${config.safetyEnabled}:${config.approveCommandId}:${config.getPendingCommandId}`;
+    if (this.isRunning && this.timer && this.lastStartedConfigKey === currentKey) {
+      return;
+    }
+
+    this.stop();
+    this.isRunning = true;
+    this.lastStartedConfigKey = currentKey;
 
     const modeDesc = config.safetyEnabled ? 'Safety Check ON' : 'ALL APPROVED (No Restrictions / Full Autonomy)';
     this.logger.info(
@@ -83,6 +98,7 @@ export class AutoApproveEngine {
       clearInterval(this.timer);
       this.timer = null;
     }
+    this.isRunning = false;
     this.isPolling = false;
     this.onStateChange(false, this.getConfig().safetyEnabled);
   }
@@ -100,9 +116,7 @@ export class AutoApproveEngine {
     if (targetState) {
       this.start();
       const modeText = config.safetyEnabled ? 'with Safety Checks' : 'ALL APPROVED (No Restrictions)';
-      vscode.window.showInformationMessage(
-        `Kiro Auto-Approve: ENABLED (${modeText})`
-      );
+      vscode.window.showInformationMessage(`Kiro Auto-Approve: ENABLED (${modeText})`);
       this.logger.info(`Auto-Approve toggled ON by user (${modeText}).`);
     } else {
       this.stop();
@@ -168,10 +182,7 @@ export class AutoApproveEngine {
     try {
       rawResult = await vscode.commands.executeCommand(getPendingCommandId);
     } catch (cmdError) {
-      this.logger.error(
-        `Command "${getPendingCommandId}" failed or does not exist.`,
-        cmdError
-      );
+      this.logger.error(`Command "${getPendingCommandId}" failed or does not exist.`, cmdError);
       return;
     }
 
@@ -218,40 +229,51 @@ export class AutoApproveEngine {
 
   private async pollKiroNative(approveCommandId: string, safetyEnabled: boolean): Promise<void> {
     // 1. Inspect recent Kiro tool actions from session
-    const latestAction = this.getLatestKiroAction();
+    const recentActions = this.getRecentKiroActions();
 
-    if (latestAction) {
-      const actionId = latestAction.id;
+    if (recentActions.length > 0) {
+      let anyUnsafe = false;
 
-      // Check if action was already evaluated
-      if (!this.processedActionIds.has(actionId)) {
-        this.processedActionIds.add(actionId);
-        if (this.processedActionIds.size > 200) {
-          const firstKey = this.processedActionIds.values().next().value;
-          if (firstKey) {
-            this.processedActionIds.delete(firstKey);
-          }
-        }
+      for (const action of recentActions) {
+        const actionId = action.id;
 
-        if (safetyEnabled) {
-          const safetyCheck = this.safetyChecker.check(latestAction.text, true);
+        // Check if action was already evaluated
+        if (!this.processedActionIds.has(actionId)) {
+          this.processedActionIds.add(actionId);
 
-          if (!safetyCheck.safe) {
-            this.skippedIds.add(actionId);
-            this.logger.recordDecision(
-              'SKIPPED',
-              latestAction.text,
-              `Banned pattern matched: ${safetyCheck.matchedPattern}`,
-              latestAction.raw
-            );
-            return;
+          // Bound processed cache to prevent memory growth
+          if (this.processedActionIds.size > 500) {
+            const firstKey = this.processedActionIds.values().next().value;
+            if (firstKey) {
+              this.processedActionIds.delete(firstKey);
+            }
           }
 
-          this.logger.recordDecision('APPROVED', latestAction.text, 'Passed safety check', latestAction.raw);
-        } else {
-          this.logger.recordDecision('APPROVED', latestAction.text, 'All Approved (No Restrictions)', latestAction.raw);
+          if (safetyEnabled) {
+            const safetyCheck = this.safetyChecker.check(action.text, true);
+
+            if (!safetyCheck.safe) {
+              this.skippedIds.add(actionId);
+              this.logger.recordDecision(
+                'SKIPPED',
+                action.text,
+                `Banned pattern matched: ${safetyCheck.matchedPattern}`,
+                action.raw
+              );
+              anyUnsafe = true;
+            } else {
+              this.logger.recordDecision('APPROVED', action.text, 'Passed safety check', action.raw);
+            }
+          } else {
+            this.logger.recordDecision('APPROVED', action.text, 'All Approved (No Restrictions)', action.raw);
+          }
+        } else if (safetyEnabled && this.skippedIds.has(actionId)) {
+          anyUnsafe = true;
         }
-      } else if (safetyEnabled && this.skippedIds.has(actionId)) {
+      }
+
+      // If ANY pending action in the batch is unsafe, block the approval command
+      if (anyUnsafe) {
         return;
       }
     }
@@ -260,13 +282,42 @@ export class AutoApproveEngine {
     try {
       await vscode.commands.executeCommand(approveCommandId);
     } catch {
-      // Command might fail if no execution is currently awaiting confirmation
+      // Expected if no confirmation is currently waiting
     }
   }
 
-  private getLatestKiroAction(): KiroToolAction | null {
-    const sessionsRoot = path.join(os.homedir(), '.kiro', 'sessions');
-    if (!fs.existsSync(sessionsRoot)) {
+  /**
+   * Resolves the active Kiro sessions root directory cross-platform.
+   */
+  private getSessionsRoot(): string | null {
+    const candidateDirs = [
+      path.join(os.homedir(), '.kiro', 'sessions'),
+      process.env.APPDATA ? path.join(process.env.APPDATA, 'Kiro', 'sessions') : null,
+      process.env.LOCALAPPDATA ? path.join(process.env.LOCALAPPDATA, 'Programs', 'Kiro', 'sessions') : null
+    ].filter((dir): dir is string => dir !== null && fs.existsSync(dir));
+
+    return candidateDirs.length > 0 ? candidateDirs[0] : null;
+  }
+
+  /**
+   * Locates the active session's messages.jsonl file with smart caching.
+   */
+  private findActiveSessionFile(): string | null {
+    const now = Date.now();
+
+    // Check if cached session is still active and recently modified
+    if (this.cachedSessionFile && now - this.cachedSessionLastScan < CACHE_VALIDITY_MS) {
+      try {
+        if (fs.existsSync(this.cachedSessionFile)) {
+          return this.cachedSessionFile;
+        }
+      } catch {
+        this.cachedSessionFile = null;
+      }
+    }
+
+    const sessionsRoot = this.getSessionsRoot();
+    if (!sessionsRoot) {
       return null;
     }
 
@@ -301,20 +352,46 @@ export class AutoApproveEngine {
         } catch {}
       }
 
-      if (!latestMsgFile) {
-        return null;
+      if (latestMsgFile) {
+        this.cachedSessionFile = latestMsgFile;
+        this.cachedSessionLastScan = now;
       }
 
-      // Read tail of messages.jsonl
-      const stat = fs.statSync(latestMsgFile);
-      const readSize = Math.min(stat.size, 32768);
-      const fd = fs.openSync(latestMsgFile, 'r');
+      return latestMsgFile;
+    } catch (err) {
+      this.logger.warn(`Could not inspect Kiro sessions directory: ${String(err)}`);
+      return null;
+    }
+  }
+
+  /**
+   * Reads recent tool actions from the active session.
+   * Uses safe try/finally to prevent file descriptor leaks.
+   */
+  private getRecentKiroActions(): KiroToolAction[] {
+    const activeFile = this.findActiveSessionFile();
+    if (!activeFile) {
+      return [];
+    }
+
+    let fd: number | null = null;
+    try {
+      const stat = fs.statSync(activeFile);
+      const readSize = Math.min(stat.size, 65536);
+      if (readSize === 0) {
+        return [];
+      }
+
+      fd = fs.openSync(activeFile, 'r');
       const buffer = Buffer.alloc(readSize);
       fs.readSync(fd, buffer, 0, readSize, Math.max(0, stat.size - readSize));
-      fs.closeSync(fd);
 
+      const actions: KiroToolAction[] = [];
       const lines = buffer.toString('utf-8').trim().split('\n');
-      for (let i = lines.length - 1; i >= 0; i--) {
+
+      // Inspect up to the last 25 lines
+      const startIndex = Math.max(0, lines.length - 25);
+      for (let i = lines.length - 1; i >= startIndex; i--) {
         const line = lines[i].trim();
         if (!line) {
           continue;
@@ -324,20 +401,29 @@ export class AutoApproveEngine {
           if (data.payload && data.payload.type === 'tool_call') {
             const status = String(data.payload.status || 'pending');
             const displayText = SafetyChecker.extractText(data.payload);
-            return {
+            actions.push({
               id: data.id || data.payload.toolCallId || String(data.timestamp),
               text: displayText,
               raw: data.payload,
               status
-            };
+            });
           }
         } catch {}
       }
-    } catch (err) {
-      this.logger.warn(`Could not inspect Kiro sessions directory: ${String(err)}`);
-    }
 
-    return null;
+      return actions;
+    } catch (err) {
+      // Invalidate cache if reading failed
+      this.cachedSessionFile = null;
+      this.logger.warn(`Error reading session messages: ${String(err)}`);
+      return [];
+    } finally {
+      if (fd !== null) {
+        try {
+          fs.closeSync(fd);
+        } catch {}
+      }
+    }
   }
 
   private normalizePendingItems(raw: unknown): unknown[] {

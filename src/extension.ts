@@ -108,10 +108,14 @@ export function activate(context: vscode.ExtensionContext): void {
         const action = await vscode.window.showInformationMessage(
           `[${entry.status}] ${entry.timestamp}`,
           { modal: true, detail: details },
+          'Copy Content',
           'Open Full Logs'
         );
 
-        if (action === 'Open Full Logs') {
+        if (action === 'Copy Content') {
+          await vscode.env.clipboard.writeText(entry.text);
+          vscode.window.showInformationMessage('Kiro Auto-Approve: Action content copied to clipboard.');
+        } else if (action === 'Open Full Logs') {
           logger.show();
         }
       }

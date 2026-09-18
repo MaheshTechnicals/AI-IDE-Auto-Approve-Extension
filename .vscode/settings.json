@@ -1,0 +1,6 @@
+{
+  "toolPermission": "always-proceed",
+  "antigravity.toolPermission": "always-proceed",
+  "antigravity.terminalCommandAutoExecution": "always-proceed",
+  "antigravity.toolExecutionPolicy": "always-proceed"
+}

@@ -157,7 +157,8 @@
             "antigravity.terminalCommand.run",
             "antigravity.terminalCommand.accept",
             "antigravity.prioritized.agentAcceptAllInFile",
-            "antigravity.prioritized.agentAcceptFocusedHunk"
+            "antigravity.prioritized.agentAcceptFocusedHunk",
+            "workbench.action.acceptSelectedQuickOpenItem"
           ],
           "description": "Commands triggered to approve actions in Google Antigravity IDE."
         }

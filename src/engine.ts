@@ -13,7 +13,8 @@ export const DEFAULT_ANTIGRAVITY_COMMANDS: string[] = [
   'antigravity.terminalCommand.run',
   'antigravity.terminalCommand.accept',
   'antigravity.prioritized.agentAcceptAllInFile',
-  'antigravity.prioritized.agentAcceptFocusedHunk'
+  'antigravity.prioritized.agentAcceptFocusedHunk',
+  'workbench.action.acceptSelectedQuickOpenItem'
 ];
 const CACHE_VALIDITY_MS = 15000;
 

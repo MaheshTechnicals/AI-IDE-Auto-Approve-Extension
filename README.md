@@ -7,10 +7,10 @@
 **The universal, ultra-fast, 100% native auto-approval extension for AI-powered IDEs (Kiro IDE, Google Antigravity IDE, VS Code).**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.4.0-green.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](package.json)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension)
 [![Engine](https://img.shields.io/badge/VS%20Code%20%2F%20Kiro%20%2F%20Antigravity-%5E1.85.0-blueviolet.svg)](package.json)
-[![Tests](https://img.shields.io/badge/tests-74%20passing-brightgreen.svg)](test/safety.test.ts)
+[![Tests](https://img.shields.io/badge/tests-80%20passing-brightgreen.svg)](test/antigravityState.test.ts)
 
 </div>
 
@@ -18,14 +18,18 @@
 
 ## 🌟 Overview
 
-**AI IDE Auto-Approve Extension** is a universal VS Code extension engineered for **Kiro IDE**, **Google Antigravity IDE**, and **VS Code AI agents**.
+**AI IDE Auto-Approve Extension** is a universal autonomous auto-approval extension engineered for **Google Antigravity IDE**, **Kiro IDE**, and **VS Code AI agents**.
 
-During active AI coding sessions, AI agents regularly prompt you to confirm terminal executions, file modifications, tool calls, diff reviews, and API fetches. **AI IDE Auto-Approve** runs a lightweight native background loop that automatically approves these requests in real-time, eliminating interruptions while maintaining complete user control.
+During active AI coding sessions, AI agents regularly prompt you to confirm terminal executions, file modifications, tool calls, diff reviews, and API fetches. **AI IDE Auto-Approve** runs a lightweight native background engine that automatically approves these requests in real-time, eliminating interruptions while maintaining complete user control.
+
+In **Google Antigravity IDE**, it directly synchronizes with the native Unified State Sync SQLite database (`state.vscdb`), injecting over **180+ explicit developer tool grants** across 12 major categories so commands run autonomously with zero permission popups.
 
 ---
 
 ## 🚀 Key Features
 
+- ⚡ **Native Antigravity USS Database Synchronization**: Directly injects bit-exact Protobuf permissions into Antigravity IDE's internal `state.vscdb` (`permission_grants_global`), solving the limitation where the native language server ignores `command(*)` wildcards.
+- 🧰 **180+ Pre-Approved Developer Commands**: Out-of-the-box autonomous execution for Shells (`bash`, `zsh`, `sh`), Runtimes & Package Managers (`node`, `npm`, `pnpm`, `yarn`, `bun`, `python3`, `pip`, `uv`), Core Utilities (`git`, `curl`, `wget`, `sed`, `awk`, `jq`, `base64`, `tar`, `chmod`, `rm`, `mv`), Compilers (`gcc`, `make`, `rustc`, `cargo`, `go`), Containers (`docker`, `kubectl`), Databases (`sqlite3`, `psql`), and Android tools (`adb`, `scrcpy`).
 - ⚡ **Zero Screen Automation / No OCR**: Works 100% through native Extension Host APIs, session transcript inspection, and internal execution handlers (`antigravity.command.accept`, `antigravity.terminalCommand.run`, `antigravity.prioritized.agentAcceptAllInFile`, `kiroAgent.execution.runOrAcceptAll`). Zero mouse simulation, zero pixel scraping, zero OCR delays. Works reliably over VNC, SSH remote, WSL, and headless setups.
 - 🔓 **Full Autonomy / Unrestricted Mode**: Auto-approves all agent tool calls, terminal commands, diff hunks, and popups immediately without restrictions.
 - 🛡️ **Optional Security Denylist**: When safety mode is enabled, pending actions are evaluated against a configurable regex denylist covering destructive operations (`rm -rf`, `sudo`, `mkfs`, `format`, `curl | sh`, `drop table`, reverse shells).
@@ -38,14 +42,14 @@ During active AI coding sessions, AI agents regularly prompt you to confirm term
 ## 📦 Quick Installation
 
 ### Option 1: Install Pre-built `.vsix` in Kiro IDE
-1. Download [ai-ide-auto-approve-0.4.0.vsix](file:///root/projects/AutoRun/ai-ide-auto-approve-0.4.0.vsix).
+1. Download [ai-ide-auto-approve-1.0.0.vsix](file:///root/projects/AutoRun/ai-ide-auto-approve-1.0.0.vsix).
 2. In **Kiro IDE**, open Extensions (`Ctrl+Shift+X`).
-3. Click `...` > **"Install from VSIX..."** and select `ai-ide-auto-approve-0.4.0.vsix`.
+3. Click `...` > **"Install from VSIX..."** and select `ai-ide-auto-approve-1.0.0.vsix`.
 
 ### Option 2: Install in Google Antigravity IDE
 Run via CLI:
 ```bash
-antigravity --install-extension ai-ide-auto-approve-0.4.0.vsix --force
+antigravity --install-extension ai-ide-auto-approve-1.0.0.vsix --force
 ```
 Or install directly via Extensions sidebar in Antigravity IDE.
 
@@ -63,8 +67,8 @@ npm run build
 npx @vscode/vsce package --no-dependencies
 
 # Install directly into Kiro or Antigravity
-kiro --install-extension ai-ide-auto-approve-0.4.0.vsix --force
-antigravity --install-extension ai-ide-auto-approve-0.4.0.vsix --force
+kiro --install-extension ai-ide-auto-approve-1.0.0.vsix --force
+antigravity --install-extension ai-ide-auto-approve-1.0.0.vsix --force
 ```
 
 ---
@@ -143,7 +147,7 @@ flowchart TD
 ## 🧪 Development & Testing
 
 ```bash
-# Run unit tests (74 test cases covering all regex rules, extraction payloads, and multi-IDE dispatch)
+# Run unit tests (80 test cases covering all regex rules, Protobuf serialization, extraction payloads, and multi-IDE dispatch)
 npm test
 
 # Run linter / typecheck

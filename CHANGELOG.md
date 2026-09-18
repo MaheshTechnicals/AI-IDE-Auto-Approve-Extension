@@ -1,9 +1,41 @@
 # Changelog
 
-All notable changes to the **Kiro Auto-Approve** extension will be documented in this file.
+All notable changes to the **AI IDE Auto-Approve** extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [1.0.0] - 2026-09-18
+
+### 🚀 Major Milestone Release: Native Antigravity Autonomous Engine & Full Tool Autonomy
+
+#### Added
+- **Native Antigravity Unified State Sync (USS) Database Injection**:
+  - Direct read/write injection of autonomous permissions into `/root/.config/Antigravity IDE/User/globalStorage/state.vscdb` (`antigravityUnifiedStateSync.agentPreferences`).
+  - Solves the critical issue where Google Antigravity IDE's native Go Language Server (`language_server_linux_x64`) ignored wildcard expressions (`command(*)`, `*`) and failed with `unexpected user interaction type: not permission`.
+  - Automatically establishes bit-exact double-layer nested Base64 Protobuf serialization.
+- **Comprehensive 180+ Developer Tool Grants across 12 Categories**:
+  - **1. Wildcards & Core Resource Actions**: `*`, `command(*)`, `unsandboxed(*)`, `custom(*)`, `execute_url(*)`, `execute_url(localhost)`, `write_file(*)`, `read_file(*)`
+  - **2. Shells & Script Interpreters**: `bash`, `sh`, `zsh`, `dash`, `fish`, `ksh`
+  - **3. Node.js / JavaScript / TypeScript Ecosystem**: `node`, `nodejs`, `npm`, `npx`, `pnpm`, `pnpx`, `yarn`, `bun`, `bunx`, `deno`, `tsc`, `ts-node`, `tsx`, `esbuild`, `vite`, `next`, `webpack`, `rollup`, `turbo`, `jest`, `vitest`, `mocha`, `eslint`, `prettier`, `corepack`
+  - **4. Python Ecosystem**: `python`, `python3`, `pip`, `pip3`, `pipx`, `poetry`, `uv`, `venv`, `virtualenv`, `conda`, `pytest`, `ruff`, `black`, `mypy`, `flake8`, `pylint`, `jupyter`
+  - **5. Core Linux / Unix Utilities**: `git`, `curl`, `wget`, `sed`, `awk`, `jq`, `base64`, `strings`, `tar`, `chmod`, `chown`, `rm`, `mv`, `cp`, `mkdir`, `cat`, `grep`, `egrep`, `fgrep`, `find`, `which`, `whereis`, `head`, `tail`, `less`, `more`, `sort`, `uniq`, `wc`, `cut`, `tr`, `tee`, `xargs`, `touch`, `ln`, `df`, `du`, `ps`, `top`, `htop`, `kill`, `killall`, `pgrep`, `pkill`, `env`, `export`, `echo`, `printf`, `clear`, `reset`, `sleep`, `whoami`, `id`, `uname`, `uptime`, `date`, `zip`, `unzip`, `gzip`, `gunzip`, `bzip2`, `xz`, `diff`, `patch`, `file`, `stat`, `md5sum`, `sha256sum`
+  - **6. Modern CLI Power Tools**: `rg` (ripgrep), `fd`, `bat`, `fzf`, `tree`, `eza`, `exa`, `ncdu`, `tldr`, `http`, `curlie`
+  - **7. Compilers & Build Tools**: `make`, `cmake`, `ninja`, `gcc`, `g++`, `clang`, `clang++`
+  - **8. Other Languages & Runtimes**: `rustc`, `cargo`, `go`, `gofmt`, `java`, `javac`, `mvn`, `gradle`, `ruby`, `gem`, `bundle`, `php`, `composer`, `perl`, `lua`
+  - **9. Containers, Cloud & DevOps**: `docker`, `docker-compose`, `podman`, `kubectl`, `helm`, `terraform`, `ansible`, `vagrant`, `aws`, `gcloud`, `az`, `gh`, `glab`, `git-lfs`, `svn`
+  - **10. Databases**: `sqlite3`, `psql`, `mysql`, `redis-cli`, `mongosh`, `mongo`
+  - **11. Mobile & Android Development**: `adb`, `emulator`, `fastboot`, `scrcpy`
+  - **12. IDE & Binaries**: `code`, `antigravity`, `agy`, `kiro`
+- **Wire-Type Aware Protobuf Engine (`AntigravityStateManager`)**:
+  - Implemented robust Protobuf decoding and encoding for wire types: Varint (0), 64-bit fixed (1), Length-delimited (2), and 32-bit fixed (5).
+  - Preserves Protobuf `e_tag` (version tracking) and all existing preferences (`terminalAutoExecutionPolicy`, theme, override store).
+- **Expanded Test Suite (80 Passing Tests)**:
+  - Added unit test coverage for Protobuf varint serialization, wire encoding, grant injection verification, denylist/allowlist, and activity logging.
+- **Enhanced Startup Sync & Logging**:
+  - Automatically logs injected grant counts and active permissions on extension activation.
 
 ---
 

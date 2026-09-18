@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="logo/logo.png" alt="Kiro Auto-Approve Logo" width="140" height="140" />
+
 # ⚡ Kiro Auto-Approve Extension
 
 **The ultra-fast, 100% native auto-approval extension for Kiro IDE AI Agent workflows.**

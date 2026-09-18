@@ -7,10 +7,10 @@
 **The ultra-fast, 100% native auto-approval extension for Kiro IDE AI Agent workflows.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.2-green.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-0.2.3-green.svg)](package.json)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension)
 [![Engine](https://img.shields.io/badge/VS%20Code%20%2F%20Kiro-%5E1.85.0-blueviolet.svg)](package.json)
-[![Tests](https://img.shields.io/badge/tests-64%20passing-brightgreen.svg)](test/safety.test.ts)
+[![Tests](https://img.shields.io/badge/tests-71%20passing-brightgreen.svg)](test/safety.test.ts)
 
 </div>
 
@@ -30,7 +30,7 @@ During active AI coding sessions, Kiro regularly prompts the user to confirm ter
 - 🔓 **Full Autonomy / Unrestricted Mode**: Auto-approves all agent tool calls, commands, and popups immediately without restrictions.
 - 🛡️ **Optional Security Denylist**: When safety mode is enabled, pending actions are evaluated against a configurable regex denylist covering destructive operations (`rm -rf`, `sudo`, `mkfs`, `format`, `curl | sh`, `drop table`, reverse shells).
 - 🔍 **Discovery-First Architecture**: Built-in discovery command (`kiroAutoApprove.dumpAvailableCommands`) that dynamically enumerates registered Kiro commands and extension exports.
-- 🖥️ **Status Bar Controller**: Visual indicator on the bottom status bar with one-click toggling (`$(zap) Auto-Approve: ALL` / `$(play) Auto-Approve: OFF`).
+- 🖥️ **Status Bar Controller**: Visual indicator on the bottom status bar with one-click toggling (`$(zap) Auto-Approve: ALL` / `$(play) Auto-Approve: OFF`) and live stats counter in the tooltip.
 - 📜 **Audit History**: In-memory activity log with interactive QuickPick review to inspect recent actions with timestamps and payloads.
 
 ---
@@ -38,11 +38,11 @@ During active AI coding sessions, Kiro regularly prompts the user to confirm ter
 ## 📦 Quick Installation
 
 ### Option 1: Install Pre-built `.vsix`
-1. Download the latest `kiro-auto-approve-0.2.1.vsix` from the [Releases](https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension/releases) page (or from this repository root).
+1. Download the latest `kiro-auto-approve-0.2.3.vsix` from the [Releases](https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension/releases) page (or from this repository root).
 2. Open **Kiro IDE**.
 3. Open the Extensions sidebar (`Ctrl+Shift+X` or `Cmd+Shift+X`).
 4. Click the **`...`** (Views and More Actions) menu in the top-right corner of the Extensions pane.
-5. Select **"Install from VSIX..."** and choose `kiro-auto-approve-0.2.1.vsix`.
+5. Select **"Install from VSIX..."** and choose `kiro-auto-approve-0.2.3.vsix`.
 6. Reload the window (`Developer: Reload Window`).
 
 ### Option 2: Build & Install via CLI
@@ -59,7 +59,7 @@ npm run build
 npx @vscode/vsce package --no-dependencies
 
 # Install directly into Kiro
-kiro --install-extension kiro-auto-approve-0.2.1.vsix --force
+kiro --install-extension kiro-auto-approve-0.2.3.vsix --force
 ```
 
 ---

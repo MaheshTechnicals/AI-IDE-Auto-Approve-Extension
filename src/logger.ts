@@ -5,6 +5,9 @@ export class OutputLogger {
   private channel: vscode.OutputChannel;
   private history: HistoryEntry[] = [];
   private maxHistoryEntries: number = 200;
+  private approvedCount: number = 0;
+  private skippedCount: number = 0;
+  private errorCount: number = 0;
 
   constructor(channelName: string = 'Kiro Auto-Approve', maxEntries: number = 200) {
     this.channel = vscode.window.createOutputChannel(channelName);
@@ -70,6 +73,14 @@ export class OutputLogger {
       rawItem
     };
 
+    if (status === 'APPROVED') {
+      this.approvedCount++;
+    } else if (status === 'SKIPPED') {
+      this.skippedCount++;
+    } else if (status === 'ERROR') {
+      this.errorCount++;
+    }
+
     this.history.push(entry);
     if (this.history.length > this.maxHistoryEntries) {
       this.history.shift();
@@ -83,12 +94,24 @@ export class OutputLogger {
     return entry;
   }
 
+  public getStats(): { approved: number; skipped: number; errors: number; total: number } {
+    return {
+      approved: this.approvedCount,
+      skipped: this.skippedCount,
+      errors: this.errorCount,
+      total: this.approvedCount + this.skippedCount + this.errorCount
+    };
+  }
+
   public getHistory(): HistoryEntry[] {
     return [...this.history].reverse();
   }
 
   public clearHistory(): void {
     this.history = [];
+    this.approvedCount = 0;
+    this.skippedCount = 0;
+    this.errorCount = 0;
     this.info('History cleared by user.');
   }
 

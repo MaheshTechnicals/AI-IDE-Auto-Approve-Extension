@@ -5,16 +5,16 @@ export const DEFAULT_BANNED_PATTERNS: string[] = [
   '\\bsudo\\b',
   '\\bmkfs\\b',
   '\\bdd\\s+if=',
-  '\\bformat\\b',
-  '\\bdel\\s+/s\\b',
+  '\\bformat\\s+[a-zA-Z]:',
+  '\\bdel\\s+.*(/s|/q|/f)\\b',
   '\\bshutdown\\b',
   '\\breboot\\b',
   '\\bpasswd\\b',
-  'curl.*\\|.*sh',
-  'wget.*\\|.*sh',
-  'chmod\\s+(-R\\s+)?777',
+  'curl.*\\|.*(sh|bash|zsh)',
+  'wget.*\\|.*(sh|bash|zsh)',
+  'chmod\\s+(-R\\s+)?(777|a\\+rwx)',
   'git\\s+push\\s+.*--force',
-  'drop\\s+table',
+  '\\bdrop\\s+(table|database)\\b',
   '\\btruncate\\s+(table\\s+)?[a-zA-Z0-9_`"\\[\\]]+',
   '/dev/sd[a-z]',
   '\\bregedit\\b',
@@ -97,8 +97,12 @@ export class SafetyChecker {
       return item;
     }
 
-    if (typeof item === 'number' || typeof item === 'boolean') {
+    if (typeof item === 'number' || typeof item === 'boolean' || typeof item === 'bigint') {
       return String(item);
+    }
+
+    if (Array.isArray(item)) {
+      return item.map((sub) => SafetyChecker.extractText(sub)).join(' ');
     }
 
     if (typeof item === 'object') {
@@ -118,10 +122,15 @@ export class SafetyChecker {
         'args',
         'arguments',
         'tool',
+        'toolName',
         'action',
+        'actionType',
         'title',
         'description',
-        'message'
+        'message',
+        'text',
+        'content',
+        'query'
       ];
 
       const parts: string[] = [];

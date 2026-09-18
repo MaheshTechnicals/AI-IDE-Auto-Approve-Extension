@@ -61,4 +61,26 @@ describe('OutputLogger Unit Tests', () => {
     assert.strictEqual(history[1].status, 'SKIPPED');
     assert.strictEqual(history[2].status, 'APPROVED');
   });
+
+  it('should accurately track statistics and reset on clear', () => {
+    assert.deepStrictEqual(logger.getStats(), { approved: 0, skipped: 0, errors: 0, total: 0 });
+
+    logger.recordDecision('APPROVED', 'git push');
+    logger.recordDecision('APPROVED', 'git status');
+    logger.recordDecision('SKIPPED', 'rm -rf /');
+    logger.recordDecision('ERROR', 'bad command');
+
+    const stats = logger.getStats();
+    assert.strictEqual(stats.approved, 2);
+    assert.strictEqual(stats.skipped, 1);
+    assert.strictEqual(stats.errors, 1);
+    assert.strictEqual(stats.total, 4);
+
+    logger.clearHistory();
+    const resetStats = logger.getStats();
+    assert.strictEqual(resetStats.approved, 0);
+    assert.strictEqual(resetStats.skipped, 0);
+    assert.strictEqual(resetStats.errors, 0);
+    assert.strictEqual(resetStats.total, 0);
+  });
 });

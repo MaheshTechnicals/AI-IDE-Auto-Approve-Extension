@@ -28,8 +28,8 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push({ dispose: () => statusBar?.dispose() });
 
   // Initialize Engine
-  engine = new AutoApproveEngine(safetyChecker, logger, (enabled, safetyEnabled) => {
-    statusBar?.update(enabled, safetyEnabled);
+  engine = new AutoApproveEngine(safetyChecker, logger, (enabled, safetyEnabled, stats) => {
+    statusBar?.update(enabled, safetyEnabled, stats);
   });
   context.subscriptions.push({ dispose: () => engine?.dispose() });
 
@@ -39,7 +39,7 @@ export function activate(context: vscode.ExtensionContext): void {
   if (isEnabled) {
     engine.start();
   } else {
-    statusBar.update(false, safetyEnabled);
+    statusBar.update(false, safetyEnabled, logger.getStats());
   }
 
   // Register Commands
@@ -124,6 +124,12 @@ export function activate(context: vscode.ExtensionContext): void {
     // 3. Clear History Command
     vscode.commands.registerCommand('kiroAutoApprove.clearHistory', () => {
       logger?.clearHistory();
+      const curCfg = vscode.workspace.getConfiguration('kiroAutoApprove');
+      statusBar?.update(
+        curCfg.get<boolean>('enabled', false),
+        curCfg.get<boolean>('safetyEnabled', false),
+        logger?.getStats()
+      );
       vscode.window.showInformationMessage('Kiro Auto-Approve: Activity history cleared.');
     }),
 
@@ -212,7 +218,7 @@ export function activate(context: vscode.ExtensionContext): void {
       ) {
         const isNowEnabled = newConfig.get<boolean>('enabled', false);
         const isSafety = newConfig.get<boolean>('safetyEnabled', false);
-        statusBar?.update(isNowEnabled, isSafety);
+        statusBar?.update(isNowEnabled, isSafety, logger?.getStats());
         if (isNowEnabled) {
           engine?.start();
         } else {

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.3] - 2026-09-18
+
+### Added
+- Real-time decision counters (`approved`, `skipped`, `errors`) in `OutputLogger` with live statistics display in status bar tooltip.
+- Status bar tooltip now shows active activity count: e.g. `Stats: 14 approved | 0 blocked`.
+- Expanded test coverage to 71 automated tests verifying all safety regexes, benign commands, stats counters, arrays, and bigints.
+
+### Fixed
+- Fixed potential false-positives on `format` by refining pattern to Windows drive format only (`\bformat\s+[a-zA-Z]:`), preserving commands like `npm run format`, `prettier --format`, and `clang-format`.
+- Refined SQL drop rule to `\bdrop\s+(table|database)\b` preventing false-positives on UI phrases like "dropdown" or "drag and drop".
+- Expanded pipe-to-shell patterns to include `zsh` (`curl.*\|.*(sh|bash|zsh)`).
+- Expanded permissions check to cover symbolic permissions `chmod\s+(-R\s+)?(777|a\+rwx)`.
+- Bounded `skippedIds` memory cache alongside `processedActionIds` to ensure zero memory accumulation during extended uptime.
+- Synchronized default configuration settings in `package.json` with engine safety definitions.
+
+---
+
 ## [0.2.2] - 2026-09-18
 
 ### Added

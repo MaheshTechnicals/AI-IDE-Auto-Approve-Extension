@@ -5,6 +5,7 @@ import * as os from 'os';
 import { SafetyChecker } from './safety';
 import { OutputLogger } from './logger';
 import { ExtensionConfig } from './types';
+import { StatusBarStats } from './statusBar';
 
 const DEFAULT_APPROVE_COMMAND = 'kiroAgent.execution.runOrAcceptAll';
 const CACHE_VALIDITY_MS = 15000;
@@ -22,7 +23,7 @@ export class AutoApproveEngine {
   private isRunning: boolean = false;
   private safetyChecker: SafetyChecker;
   private logger: OutputLogger;
-  private onStateChange: (enabled: boolean, safetyEnabled: boolean) => void;
+  private onStateChange: (enabled: boolean, safetyEnabled: boolean, stats?: StatusBarStats) => void;
   private skippedIds: Set<string> = new Set();
   private processedActionIds: Set<string> = new Set();
 
@@ -33,7 +34,7 @@ export class AutoApproveEngine {
   constructor(
     safetyChecker: SafetyChecker,
     logger: OutputLogger,
-    onStateChange: (enabled: boolean, safetyEnabled: boolean) => void
+    onStateChange: (enabled: boolean, safetyEnabled: boolean, stats?: StatusBarStats) => void
   ) {
     this.safetyChecker = safetyChecker;
     this.logger = logger;
@@ -78,7 +79,7 @@ export class AutoApproveEngine {
     this.logger.info(
       `Starting Auto-Approve loop (Interval: ${config.pollIntervalSeconds}s | Mode: ${modeDesc} | ApproveCmd: "${config.approveCommandId}")`
     );
-    this.onStateChange(true, config.safetyEnabled);
+    this.onStateChange(true, config.safetyEnabled, this.logger.getStats());
 
     const intervalMs = config.pollIntervalSeconds * 1000;
     this.timer = setInterval(() => {
@@ -100,7 +101,7 @@ export class AutoApproveEngine {
     }
     this.isRunning = false;
     this.isPolling = false;
-    this.onStateChange(false, this.getConfig().safetyEnabled);
+    this.onStateChange(false, this.getConfig().safetyEnabled, this.logger.getStats());
   }
 
   public async toggle(): Promise<boolean> {
@@ -111,7 +112,7 @@ export class AutoApproveEngine {
       .getConfiguration('kiroAutoApprove')
       .update('enabled', targetState, vscode.ConfigurationTarget.Global);
 
-    this.onStateChange(targetState, config.safetyEnabled);
+    this.onStateChange(targetState, config.safetyEnabled, this.logger.getStats());
 
     if (targetState) {
       this.start();
@@ -135,7 +136,7 @@ export class AutoApproveEngine {
       .getConfiguration('kiroAutoApprove')
       .update('safetyEnabled', targetSafety, vscode.ConfigurationTarget.Global);
 
-    this.onStateChange(config.enabled, targetSafety);
+    this.onStateChange(config.enabled, targetSafety, this.logger.getStats());
 
     const desc = targetSafety ? 'Safety Check ENABLED' : 'Safety Check DISABLED (ALL APPROVED)';
     vscode.window.showInformationMessage(`Kiro Auto-Approve: ${desc}`);
@@ -161,11 +162,12 @@ export class AutoApproveEngine {
       // Mode A: Explicit command configured for fetching pending items
       if (config.getPendingCommandId) {
         await this.pollWithCustomCommand(config.getPendingCommandId, approveCmd, config.safetyEnabled);
-        return;
+      } else {
+        // Mode B: Native Kiro IDE session & execution monitoring
+        await this.pollKiroNative(approveCmd, config.safetyEnabled);
       }
 
-      // Mode B: Native Kiro IDE session & execution monitoring
-      await this.pollKiroNative(approveCmd, config.safetyEnabled);
+      this.onStateChange(config.enabled, config.safetyEnabled, this.logger.getStats());
     } catch (cycleErr) {
       this.logger.error('Error during auto-approve check cycle', cycleErr);
     } finally {
@@ -201,6 +203,12 @@ export class AutoApproveEngine {
         if (!safetyCheck.safe) {
           if (!this.skippedIds.has(itemId)) {
             this.skippedIds.add(itemId);
+            if (this.skippedIds.size > 500) {
+              const firstKey = this.skippedIds.values().next().value;
+              if (firstKey) {
+                this.skippedIds.delete(firstKey);
+              }
+            }
             this.logger.recordDecision(
               'SKIPPED',
               itemText,
@@ -254,6 +262,12 @@ export class AutoApproveEngine {
 
             if (!safetyCheck.safe) {
               this.skippedIds.add(actionId);
+              if (this.skippedIds.size > 500) {
+                const firstKey = this.skippedIds.values().next().value;
+                if (firstKey) {
+                  this.skippedIds.delete(firstKey);
+                }
+              }
               this.logger.recordDecision(
                 'SKIPPED',
                 action.text,

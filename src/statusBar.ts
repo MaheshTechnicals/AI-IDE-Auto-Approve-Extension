@@ -1,5 +1,11 @@
 import * as vscode from 'vscode';
 
+export interface StatusBarStats {
+  approved: number;
+  skipped: number;
+  errors?: number;
+}
+
 export class StatusBarController {
   private statusBarItem: vscode.StatusBarItem;
 
@@ -8,24 +14,33 @@ export class StatusBarController {
       vscode.StatusBarAlignment.Right,
       100
     );
+    this.statusBarItem.name = 'Kiro Auto-Approve';
     this.statusBarItem.command = 'kiroAutoApprove.toggle';
     this.update(false);
     this.statusBarItem.show();
   }
 
-  public update(enabled: boolean, safetyEnabled: boolean = false): void {
+  public update(
+    enabled: boolean,
+    safetyEnabled: boolean = false,
+    stats?: StatusBarStats
+  ): void {
+    const statsSuffix = stats
+      ? `\n\nActivity: ${stats.approved} approved | ${stats.skipped} blocked`
+      : '';
+
     if (enabled) {
       if (!safetyEnabled) {
-        this.statusBarItem.text = '$(zap) Auto-Approve: ALL (No Restrictions)';
-        this.statusBarItem.tooltip = 'Kiro Auto-Approve is ACTIVE in Full Autonomy mode (all commands/popups auto-approved). Click to Pause.';
+        this.statusBarItem.text = '$(zap) Auto-Approve: ALL';
+        this.statusBarItem.tooltip = `Kiro Auto-Approve is ACTIVE in Full Autonomy mode (all commands/popups auto-approved).${statsSuffix}\n\nClick to Pause.`;
       } else {
         this.statusBarItem.text = '$(debug-pause) Auto-Approve: ON';
-        this.statusBarItem.tooltip = 'Kiro Auto-Approve is ACTIVE with safety checks. Click to Pause.';
+        this.statusBarItem.tooltip = `Kiro Auto-Approve is ACTIVE with safety checks.${statsSuffix}\n\nClick to Pause.`;
       }
       this.statusBarItem.backgroundColor = undefined;
     } else {
       this.statusBarItem.text = '$(play) Auto-Approve: OFF';
-      this.statusBarItem.tooltip = 'Kiro Auto-Approve is OFF. Click to Enable.';
+      this.statusBarItem.tooltip = `Kiro Auto-Approve is OFF.${statsSuffix}\n\nClick to Enable.`;
       this.statusBarItem.backgroundColor = undefined;
     }
   }

@@ -4,6 +4,7 @@ import { OutputLogger } from './logger';
 import { StatusBarController } from './statusBar';
 import { AutoApproveEngine } from './engine';
 import { discoverEditorCommands } from './discovery';
+import { startAutoUpdater, checkForUpdate } from './updater';
 
 let engine: AutoApproveEngine | null = null;
 let logger: OutputLogger | null = null;
@@ -48,6 +49,9 @@ export function activate(context: vscode.ExtensionContext): void {
   } else {
     statusBar.update(false, engineConfig.safetyEnabled, logger.getStats());
   }
+
+  // Initialize Auto-Updater (checks GitHub Releases for new versions)
+  startAutoUpdater(context, logger);
 
   // Helper to register dual commands (primary aiIdeAutoApprove + backward-compatible kiroAutoApprove)
   const registerDualCommand = (
@@ -242,6 +246,15 @@ export function activate(context: vscode.ExtensionContext): void {
     'aiIdeAutoApprove.openOutput',
     'kiroAutoApprove.openOutput',
     openOutputHandler
+  );
+
+  // 8. Check for Updates Command
+  registerDualCommand(
+    'aiIdeAutoApprove.checkForUpdates',
+    'kiroAutoApprove.checkForUpdates',
+    async () => {
+      await checkForUpdate(logger ?? undefined, true);
+    }
   );
 
   // Listen to configuration changes (both namespaces)

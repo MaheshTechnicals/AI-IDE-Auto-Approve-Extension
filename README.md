@@ -31,7 +31,8 @@
 <br/>
 
 > [!IMPORTANT]
-> This extension is **NOT available** on the VS Code Marketplace. It is distributed as a `.vsix` file via **[GitHub Releases](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)**.
+> This extension is **NOT available** on the VS Code Marketplace. It is distributed as a `.vsix` file via **[GitHub Releases](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)**.<br/>
+> **Good news:** It comes with a **Built-in Auto-Updater**! Once installed, it checks for future updates from GitHub Releases and updates itself with 1 click.
 
 ---
 
@@ -87,6 +88,10 @@ When you use AI agents inside **Google Antigravity IDE**, **Kiro IDE**, or **VS 
 <tr>
 <td>📜</td>
 <td><strong>Audit History</strong><br/>In-memory activity log with interactive QuickPick review. Inspect decisions with timestamps, payloads, and copy-to-clipboard.</td>
+</tr>
+<tr>
+<td>🔄</td>
+<td><strong>Built-in GitHub Auto-Updater</strong><br/>No marketplace required. Periodically checks GitHub Releases in the background and prompts to update with 1 click right inside your IDE.</td>
 </tr>
 </table>
 
@@ -220,6 +225,19 @@ npx @vscode/vsce package --no-dependencies
 | **2** | `Ctrl+Shift+P` → `AI IDE Auto-Approve: Toggle Safety Checks On/Off` | Switch between Full Autonomy and Safety Denylist modes |
 | **3** | `Ctrl+Shift+P` → `AI IDE Auto-Approve: Show Recent Activity` | Inspect recent approvals/blocks with timestamps |
 | **4** | `Ctrl+Shift+P` → `AI IDE Auto-Approve: Show Logs` | Open dedicated Output channel for live logging |
+| **5** | `Ctrl+Shift+P` → `AI IDE Auto-Approve: Check for Updates` | Check GitHub Releases for new updates & install |
+
+---
+
+## 🔄 Built-in GitHub Auto-Updater
+
+Because this extension is distributed directly on GitHub instead of the closed VS Code Marketplace, it includes an **autonomous self-updating engine**:
+
+- ⏰ **Silent Background Polling**: Automatically checks GitHub Releases 30 seconds after IDE launch, then every 4 hours. Never slows down editor startup.
+- 🚀 **1-Click Interactive Update**: When a new version is released on GitHub, an interactive prompt lets you update immediately with progress reporting.
+- ⚡ **Zero Marketplace Dependency**: Directly downloads the `.vsix` release asset and executes VS Code's internal `workbench.extensions.installExtension` command.
+- 🔍 **Manual Check Anytime**: Press `Ctrl+Shift+P` → select `AI IDE Auto-Approve: Check for Updates`.
+- 🎛️ **Fully Configurable**: Turn automatic checks on or off anytime via `"aiIdeAutoApprove.autoUpdateCheck"`.
 
 ---
 
@@ -238,6 +256,7 @@ Accessible via `Settings > Extensions > AI IDE Auto-Approve`:
 | `aiIdeAutoApprove.approveCommandId` | `string` | `kiroAgent.execution.runOrAcceptAll` | Kiro approval command |
 | `aiIdeAutoApprove.bannedKeywords` | `string[]` | *(22 regex patterns)* | Denylist patterns when safety is ON |
 | `aiIdeAutoApprove.maxHistoryEntries` | `number` | `200` | Max activity records in memory |
+| `aiIdeAutoApprove.autoUpdateCheck` | `boolean` | `true` | Auto-check GitHub Releases for updates in background |
 
 > Legacy `kiroAutoApprove.*` keys are fully supported for backward compatibility.
 
@@ -254,6 +273,7 @@ Accessible via `Settings > Extensions > AI IDE Auto-Approve`:
 | `AI IDE Auto-Approve: Add Banned Keyword` | Add a custom regex pattern to the denylist |
 | `AI IDE Auto-Approve: Discover Editor Commands` | Debug: enumerate all IDE commands |
 | `AI IDE Auto-Approve: Show Logs` | Open the live Output channel |
+| `AI IDE Auto-Approve: Check for Updates` | Check GitHub Releases for new versions & update |
 
 ---
 

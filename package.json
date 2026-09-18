@@ -71,6 +71,10 @@
         "title": "AI IDE Auto-Approve: Show Logs"
       },
       {
+        "command": "aiIdeAutoApprove.checkForUpdates",
+        "title": "AI IDE Auto-Approve: Check for Updates"
+      },
+      {
         "command": "kiroAutoApprove.toggle",
         "title": "AI IDE Auto-Approve: Toggle On/Off (Legacy)"
       },
@@ -97,6 +101,10 @@
       {
         "command": "kiroAutoApprove.openOutput",
         "title": "AI IDE Auto-Approve: Show Logs (Legacy)"
+      },
+      {
+        "command": "kiroAutoApprove.checkForUpdates",
+        "title": "AI IDE Auto-Approve: Check for Updates (Legacy)"
       }
     ],
     "configuration": {
@@ -196,6 +204,11 @@
           ],
           "description": "Commands triggered to approve actions in Google Antigravity IDE."
         },
+        "aiIdeAutoApprove.autoUpdateCheck": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically check for new releases on GitHub and prompt to update."
+        },
         "kiroAutoApprove.enabled": {
           "type": "boolean",
           "default": false,
@@ -289,6 +302,11 @@
             "workbench.action.acceptSelectedQuickOpenItem"
           ],
           "description": "Legacy fallback: Commands triggered to approve actions in Google Antigravity IDE."
+        },
+        "kiroAutoApprove.autoUpdateCheck": {
+          "type": "boolean",
+          "default": true,
+          "description": "Legacy fallback: Automatically check for new releases on GitHub and prompt to update."
         }
       }
     }

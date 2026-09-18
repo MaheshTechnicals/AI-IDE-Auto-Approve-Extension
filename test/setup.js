@@ -20,7 +20,29 @@ const mockVscode = {
     showWarningMessage: async () => undefined,
     showErrorMessage: async () => undefined,
     showQuickPick: async () => undefined,
-    showInputBox: async () => undefined
+    showInputBox: async () => undefined,
+    setStatusBarMessage: () => ({ dispose: () => {} }),
+    withProgress: async (_options, task) => {
+      return task(
+        { report: () => {} },
+        { isCancellationRequested: false, onCancellationRequested: () => ({ dispose: () => {} }) }
+      );
+    }
+  },
+  extensions: {
+    getExtension: () => undefined
+  },
+  env: {
+    openExternal: async () => true
+  },
+  Uri: {
+    file: (p) => ({ fsPath: p, scheme: 'file' }),
+    parse: (u) => ({ toString: () => u, scheme: 'https' })
+  },
+  ProgressLocation: {
+    SourceControl: 1,
+    Window: 10,
+    Notification: 15
   },
   commands: {
     executedCommands: [],

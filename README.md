@@ -287,7 +287,7 @@ Give this repo a **star** on GitHub — it helps others discover this project an
 
 ### ☕ Buy Me a Coffee
 
-<a href="https://www.buymeacoffee.com/MaheshTechnicals" target="_blank">
+<a href="https://www.paypal.com/paypalme/Varma161" target="_blank">
   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200" />
 </a>
 

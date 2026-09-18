@@ -2,7 +2,7 @@
   "name": "ai-ide-auto-approve",
   "displayName": "AI IDE Auto-Approve Extension",
   "description": "Universal autonomous auto-approval extension for AI IDEs (Kiro IDE, Google Antigravity IDE, VS Code). Automatically executes and approves terminal commands, file diffs, and agent proposals with zero interruptions.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "publisher": "MaheshTechnicals",
   "author": "MaheshTechnicals",
   "license": "MIT",
@@ -182,11 +182,16 @@
             "type": "string"
           },
           "default": [
+            "antigravity.acceptAgentStep",
             "antigravity.command.accept",
             "antigravity.terminalCommand.run",
             "antigravity.terminalCommand.accept",
             "antigravity.prioritized.agentAcceptAllInFile",
             "antigravity.prioritized.agentAcceptFocusedHunk",
+            "workbench.action.chat.acceptTool",
+            "workbench.action.chat.acceptToolPostExecution",
+            "workbench.action.chat.acceptElicitation",
+            "workbench.action.chat.submit",
             "workbench.action.acceptSelectedQuickOpenItem"
           ],
           "description": "Commands triggered to approve actions in Google Antigravity IDE."
@@ -271,11 +276,16 @@
             "type": "string"
           },
           "default": [
+            "antigravity.acceptAgentStep",
             "antigravity.command.accept",
             "antigravity.terminalCommand.run",
             "antigravity.terminalCommand.accept",
             "antigravity.prioritized.agentAcceptAllInFile",
             "antigravity.prioritized.agentAcceptFocusedHunk",
+            "workbench.action.chat.acceptTool",
+            "workbench.action.chat.acceptToolPostExecution",
+            "workbench.action.chat.acceptElicitation",
+            "workbench.action.chat.submit",
             "workbench.action.acceptSelectedQuickOpenItem"
           ],
           "description": "Legacy fallback: Commands triggered to approve actions in Google Antigravity IDE."

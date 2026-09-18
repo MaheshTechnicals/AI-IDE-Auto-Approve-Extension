@@ -27,10 +27,11 @@ describe('AutoApproveEngine Unit Tests', () => {
     assert.strictEqual(config.approveCommandId, 'kiroAgent.execution.runOrAcceptAll');
     assert.strictEqual(config.enableKiro, true);
     assert.strictEqual(config.enableAntigravity, true);
-    assert.ok(Array.isArray(config.antigravityApproveCommands));
+    assert.ok(config.antigravityApproveCommands.includes('antigravity.acceptAgentStep'));
     assert.ok(config.antigravityApproveCommands.includes('antigravity.command.accept'));
     assert.ok(config.antigravityApproveCommands.includes('antigravity.terminalCommand.run'));
     assert.ok(config.antigravityApproveCommands.includes('antigravity.prioritized.agentAcceptAllInFile'));
+    assert.ok(config.antigravityApproveCommands.includes('workbench.action.chat.acceptTool'));
   });
 
   it('should normalize pending items from various shapes', () => {

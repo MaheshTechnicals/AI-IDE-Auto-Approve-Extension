@@ -6,14 +6,20 @@ import { SafetyChecker } from './safety';
 import { OutputLogger } from './logger';
 import { ExtensionConfig } from './types';
 import { StatusBarStats } from './statusBar';
+import { AntigravityStateManager } from './antigravityState';
 
 export const DEFAULT_APPROVE_COMMAND = 'kiroAgent.execution.runOrAcceptAll';
 export const DEFAULT_ANTIGRAVITY_COMMANDS: string[] = [
+  'antigravity.acceptAgentStep',
   'antigravity.command.accept',
   'antigravity.terminalCommand.run',
   'antigravity.terminalCommand.accept',
   'antigravity.prioritized.agentAcceptAllInFile',
   'antigravity.prioritized.agentAcceptFocusedHunk',
+  'workbench.action.chat.acceptTool',
+  'workbench.action.chat.acceptToolPostExecution',
+  'workbench.action.chat.acceptElicitation',
+  'workbench.action.chat.submit',
   'workbench.action.acceptSelectedQuickOpenItem'
 ];
 const CACHE_VALIDITY_MS = 15000;
@@ -114,6 +120,12 @@ export class AutoApproveEngine {
       config.enableKiro ? 'Kiro IDE' : null,
       config.enableAntigravity ? 'Google Antigravity' : null
     ].filter(Boolean).join(' & ') || 'Universal';
+
+    if (config.enableAntigravity) {
+      try {
+        AntigravityStateManager.ensureGlobalPermissions();
+      } catch {}
+    }
 
     this.logger.info(
       `Starting AI IDE Auto-Approve loop (Interval: ${config.pollIntervalSeconds}s | Mode: ${modeDesc} | Targets: ${targets})`
@@ -425,6 +437,11 @@ export class AutoApproveEngine {
         return;
       }
     }
+
+    // Ensure persistent global permissions in Antigravity's Unified State Sync
+    try {
+      AntigravityStateManager.ensureGlobalPermissions();
+    } catch {}
 
     // Trigger Antigravity approval commands
     const cmds =

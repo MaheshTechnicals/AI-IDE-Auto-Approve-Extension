@@ -1,172 +1,259 @@
 <div align="center">
 
-<img src="logo/logo.png" alt="AI IDE Auto-Approve Logo" width="140" height="140" />
+<img src="logo/logo.png" alt="AI IDE Auto-Approve Logo" width="160" height="160" />
 
 # ⚡ AI IDE Auto-Approve Extension
 
-**The universal, ultra-fast, 100% native auto-approval extension for AI-powered IDEs (Kiro IDE, Google Antigravity IDE, VS Code).**
+### Eliminate Every Popup. Achieve Full AI Autonomy.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-1.1.0-green.svg)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)
-[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension)
-[![Engine](https://img.shields.io/badge/VS%20Code%20%2F%20Kiro%20%2F%20Antigravity-%5E1.85.0-blueviolet.svg)](package.json)
-[![Tests](https://img.shields.io/badge/tests-80%20passing-brightgreen.svg)](test/)
-[![GitHub Release](https://img.shields.io/github/v/release/MaheshTechnicals/AI-IDE-Auto-Approve-Extension?label=download&color=orange)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)
+**The universal, ultra-fast, 100% native auto-approval engine for AI-powered IDEs.**<br/>
+**Google Antigravity IDE · Kiro IDE · VS Code**
+
+<br/>
+
+[![GitHub Release](https://img.shields.io/github/v/release/MaheshTechnicals/AI-IDE-Auto-Approve-Extension?style=for-the-badge&logo=github&color=orange&label=Download)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20·%20macOS%20·%20Windows-333333.svg?style=for-the-badge&logo=windows-terminal&logoColor=white)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension)
+
+[![Version](https://img.shields.io/badge/v1.1.0-stable-brightgreen.svg?style=flat-square)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)
+[![Tests](https://img.shields.io/badge/tests-80%20passing-brightgreen.svg?style=flat-square)](test/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](tsconfig.json)
+[![Engine](https://img.shields.io/badge/VS%20Code%20Engine-%5E1.85.0-007ACC.svg?style=flat-square&logo=visual-studio-code&logoColor=white)](package.json)
+[![GitHub Stars](https://img.shields.io/github/stars/MaheshTechnicals/AI-IDE-Auto-Approve-Extension?style=flat-square&logo=github)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension)
+
+<br/>
+
+<a href="https://www.paypal.com/paypalme/Varma161" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-blue.svg?style=for-the-badge&logo=paypal" alt="Donate via PayPal" /></a>
+<a href="https://www.paypal.com/paypalme/Varma161" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="150" /></a>
 
 </div>
 
----
+<br/>
 
-> **⚠️ Note:** This extension is **NOT available** on the VS Code Marketplace. It is distributed as a `.vsix` file via [GitHub Releases](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest). Follow the installation instructions below to install it manually.
-
----
-
-## 🌟 Overview
-
-**AI IDE Auto-Approve Extension** is a universal autonomous auto-approval extension engineered for **Google Antigravity IDE**, **Kiro IDE**, and any **VS Code-based AI agent IDE**.
-
-During active AI coding sessions, AI agents regularly prompt you to confirm terminal executions, file modifications, tool calls, diff reviews, and API fetches. **AI IDE Auto-Approve** runs a lightweight native background engine that automatically approves these requests in real-time, eliminating interruptions while maintaining complete user control.
-
-In **Google Antigravity IDE**, it directly synchronizes with the native Unified State Sync SQLite database (`state.vscdb`), injecting over **180+ explicit developer tool grants** across 12 major categories so commands run autonomously with zero permission popups.
-
-### 🌍 Cross-Platform Support
-
-Fully tested and verified on **Windows**, **Linux**, and **macOS** with intelligent path resolution:
-- Linux: `~/.config/`, `~/.gemini/`, `~/.kiro/`, `$XDG_CONFIG_HOME`
-- macOS: `~/Library/Application Support/`, `~/.gemini/`, `~/.kiro/`
-- Windows: `%APPDATA%`, `%LOCALAPPDATA%`
+> [!IMPORTANT]
+> This extension is **NOT available** on the VS Code Marketplace. It is distributed as a `.vsix` file via **[GitHub Releases](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)**.
 
 ---
 
-## 🚀 Key Features
+## 🎬 What Does It Do?
 
-- ⚡ **Native Antigravity USS Database Synchronization**: Directly injects bit-exact Protobuf permissions into Antigravity IDE's internal `state.vscdb` (`permission_grants_global`), solving the limitation where the native language server ignores `command(*)` wildcards.
-- 🧰 **180+ Pre-Approved Developer Commands**: Out-of-the-box autonomous execution for:
-  - **Shells**: `bash`, `zsh`, `sh`, `dash`, `fish`, `ksh`
-  - **Runtimes & Package Managers**: `node`, `npm`, `npx`, `pnpm`, `yarn`, `bun`, `deno`, `python3`, `pip`, `uv`, `conda`, `poetry`
-  - **Core Utilities**: `git`, `curl`, `wget`, `sed`, `awk`, `jq`, `base64`, `tar`, `chmod`, `rm`, `mv`, `cp`, `grep`, `find`, `cat`, `ls`, `head`, `tail`
-  - **Compilers & Build Tools**: `gcc`, `g++`, `clang`, `make`, `cmake`, `ninja`, `rustc`, `cargo`, `go`, `javac`, `gradle`, `dotnet`
-  - **Containers & Cloud**: `docker`, `docker-compose`, `kubectl`, `helm`, `terraform`, `aws`, `gcloud`, `az`, `gh`
-  - **Databases**: `sqlite3`, `psql`, `mysql`, `redis-cli`, `mongosh`
-  - **Mobile**: `adb`, `emulator`, `fastboot`, `scrcpy`
-  - **IDE & AI Tools**: `code`, `antigravity`, `agy`, `kiro`
-- ⚡ **Zero Screen Automation / No OCR**: Works 100% through native Extension Host APIs, session transcript inspection, and internal execution handlers. Zero mouse simulation, zero pixel scraping. Works reliably over VNC, SSH remote, WSL, and headless setups.
-- 🔓 **Full Autonomy / Unrestricted Mode**: Auto-approves all agent tool calls, terminal commands, diff hunks, and popups immediately without restrictions.
-- 🛡️ **Optional Security Denylist**: When safety mode is enabled, pending actions are evaluated against a configurable regex denylist covering destructive operations (`rm -rf`, `sudo`, `mkfs`, `format`, `curl | sh`, `drop table`, reverse shells).
-- 🔍 **Discovery-First Architecture**: Built-in discovery command that dynamically enumerates registered Kiro and Antigravity commands and extension exports.
-- 🖥️ **Status Bar Controller**: Visual indicator on the bottom status bar with one-click toggling and live stats counter in the tooltip.
-- 📜 **Audit History**: In-memory activity log with interactive QuickPick review to inspect recent actions with timestamps and payloads.
+When you use AI agents inside **Google Antigravity IDE**, **Kiro IDE**, or **VS Code**, the agent constantly asks for your permission:
+
+> *"Allow terminal command?"* · *"Accept file edit?"* · *"Run this tool?"* · *"Execute diff?"*
+
+**AI IDE Auto-Approve eliminates ALL of these interruptions.** It runs a lightweight native polling engine that auto-approves every agent request in real-time — giving your AI full autonomy to code, build, test, and deploy without pause.
+
+### 🧠 How It Works — Three Engines in One
+
+| Engine | IDE | Mechanism |
+|---|---|---|
+| **Protobuf USS Injection** | Google Antigravity IDE | Injects 180+ command permissions directly into `state.vscdb` via wire-type aware Protobuf serialization |
+| **Session Transcript Monitor** | Google Antigravity IDE | Reads `transcript.jsonl` in real-time to detect pending tool calls |
+| **Native Command Dispatcher** | Kiro IDE / VS Code | Fires `kiroAgent.execution.runOrAcceptAll` and 11 Antigravity approval commands every poll cycle |
+
+---
+
+## ✨ Key Features
+
+<table>
+<tr>
+<td width="60">⚡</td>
+<td><strong>Native Antigravity USS Database Sync</strong><br/>Directly injects bit-exact Protobuf permissions into <code>state.vscdb</code> (<code>permission_grants_global</code>), solving the limitation where the native language server ignores <code>command(*)</code> wildcards.</td>
+</tr>
+<tr>
+<td>🧰</td>
+<td><strong>180+ Pre-Approved Developer Commands</strong><br/>Out-of-the-box autonomous execution across 12 categories — shells, runtimes, package managers, core utilities, compilers, containers, databases, and more.</td>
+</tr>
+<tr>
+<td>🚫</td>
+<td><strong>Zero Screen Automation / No OCR</strong><br/>100% native Extension Host APIs. No mouse simulation, no pixel scraping. Works reliably over VNC, SSH remote, WSL, and headless setups.</td>
+</tr>
+<tr>
+<td>🔓</td>
+<td><strong>Full Autonomy Mode</strong><br/>Auto-approves ALL agent tool calls, terminal commands, diff hunks, and popups immediately without any restrictions.</td>
+</tr>
+<tr>
+<td>🛡️</td>
+<td><strong>Optional Safety Denylist</strong><br/>Configurable regex patterns block dangerous operations like <code>rm -rf</code>, <code>sudo</code>, <code>mkfs</code>, <code>format</code>, <code>curl | sh</code>, <code>DROP TABLE</code>, and reverse shells.</td>
+</tr>
+<tr>
+<td>🌍</td>
+<td><strong>Cross-Platform</strong><br/>Verified on <strong>Windows</strong>, <strong>Linux</strong>, and <strong>macOS</strong> with 5-candidate intelligent path resolution including <code>XDG_CONFIG_HOME</code> and <code>~/Library/Application Support/</code>.</td>
+</tr>
+<tr>
+<td>📊</td>
+<td><strong>Live Status Bar</strong><br/>One-click toggle with live approved/blocked counters. Visual indicator: <code>⚡ Auto-Approve: ALL</code> or <code>▶ Auto-Approve: OFF</code>.</td>
+</tr>
+<tr>
+<td>📜</td>
+<td><strong>Audit History</strong><br/>In-memory activity log with interactive QuickPick review. Inspect decisions with timestamps, payloads, and copy-to-clipboard.</td>
+</tr>
+</table>
+
+---
+
+## 🧰 Supported Commands (180+)
+
+<details>
+<summary><strong>🐚 Shells & Script Interpreters</strong> — 6 commands</summary>
+
+`bash` · `sh` · `zsh` · `dash` · `fish` · `ksh`
+</details>
+
+<details>
+<summary><strong>📦 Node.js / JavaScript / TypeScript</strong> — 26 commands</summary>
+
+`node` · `nodejs` · `npm` · `npx` · `pnpm` · `pnpx` · `yarn` · `bun` · `bunx` · `deno` · `tsc` · `ts-node` · `tsx` · `esbuild` · `vite` · `next` · `webpack` · `rollup` · `turbo` · `jest` · `vitest` · `mocha` · `eslint` · `prettier` · `corepack`
+</details>
+
+<details>
+<summary><strong>🐍 Python Ecosystem</strong> — 24 commands</summary>
+
+`python` · `python3` · `python3.10–3.13` · `py` · `pip` · `pip3` · `pipx` · `poetry` · `pipenv` · `conda` · `mamba` · `uv` · `pytest` · `black` · `ruff` · `flake8` · `mypy` · `pylint` · `isort` · `virtualenv` · `venv`
+</details>
+
+<details>
+<summary><strong>🔧 Core Linux / Unix Utilities</strong> — 66 commands</summary>
+
+`git` · `curl` · `wget` · `sed` · `awk` · `gawk` · `jq` · `yq` · `base64` · `strings` · `tar` · `gzip` · `gunzip` · `zip` · `unzip` · `bzip2` · `bunzip2` · `xz` · `unxz` · `7z` · `chmod` · `chown` · `chgrp` · `rm` · `mv` · `cp` · `mkdir` · `rmdir` · `touch` · `cat` · `ls` · `dir` · `head` · `tail` · `grep` · `egrep` · `fgrep` · `rg` · `ag` · `ack` · `find` · `which` · `whereis` · `diff` · `patch` · `sort` · `uniq` · `wc` · `tr` · `cut` · `tee` · `xargs` · `comm` · `join` · `paste` · `column` · `hexdump` · `od` · `xxd` · `readlink` · `realpath` · `basename` · `dirname` · `file` · `stat` · `pathchk`
+</details>
+
+<details>
+<summary><strong>⚙️ Process & System Diagnostics</strong> — 38 commands</summary>
+
+`ps` · `top` · `htop` · `kill` · `pkill` · `killall` · `sleep` · `wait` · `nohup` · `timeout` · `time` · `date` · `cal` · `uptime` · `env` · `printenv` · `export` · `unset` · `uname` · `hostname` · `whoami` · `id` · `pwd` · `cd` · `df` · `du` · `free` · `lsof` · `fuser` · `ulimit` · `sysctl` · `dmesg` · `journalctl` · `echo` · `printf` · `test` · `true` · `false`
+</details>
+
+<details>
+<summary><strong>🏗️ Compilers, Build Systems & Languages</strong> — 38 commands</summary>
+
+`gcc` · `g++` · `cc` · `c++` · `clang` · `clang++` · `make` · `cmake` · `ninja` · `cargo` · `rustc` · `rustup` · `go` · `gofmt` · `golangci-lint` · `java` · `javac` · `jar` · `gradle` · `./gradlew` · `mvn` · `./mvnw` · `kotlin` · `kotlinc` · `dotnet` · `php` · `ruby` · `gem` · `bundle` · `rake` · `swift` · `perl` · `lua` · `luajit` · `R` · `Rscript` · `zig`
+</details>
+
+<details>
+<summary><strong>🌐 Network & Remote</strong> — 12 commands</summary>
+
+`ssh` · `scp` · `rsync` · `netstat` · `ss` · `ping` · `traceroute` · `nslookup` · `dig` · `host` · `nc` · `ncat` · `socat`
+</details>
+
+<details>
+<summary><strong>🐳 Containers, Cloud & DevOps</strong> — 16 commands</summary>
+
+`docker` · `docker-compose` · `podman` · `kubectl` · `helm` · `minikube` · `kind` · `terraform` · `vagrant` · `aws` · `gcloud` · `az` · `gh` · `glab` · `git-lfs` · `svn`
+</details>
+
+<details>
+<summary><strong>🗄️ Databases</strong> — 6 commands</summary>
+
+`sqlite3` · `psql` · `mysql` · `redis-cli` · `mongosh` · `mongo`
+</details>
+
+<details>
+<summary><strong>📱 Android & Mobile</strong> — 4 commands</summary>
+
+`adb` · `emulator` · `fastboot` · `scrcpy`
+</details>
+
+<details>
+<summary><strong>💻 IDE & AI Tools</strong> — 4 commands</summary>
+
+`code` · `antigravity` · `agy` · `kiro`
+</details>
 
 ---
 
 ## 📦 Installation
 
-> **This extension is installed via `.vsix` file from GitHub Releases — NOT from the VS Code Marketplace.**
+> [!NOTE]
+> This extension is distributed via **GitHub Releases** as a `.vsix` file. Download and install manually.
 
-### Step 1: Download the VSIX
+### Step 1 — Download
 
-Go to **[GitHub Releases](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)** and download the latest `ai-ide-auto-approve-x.x.x.vsix` file.
+📥 **[Download Latest Release (.vsix)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)**
 
-Or download directly via CLI:
+Or via CLI:
 ```bash
-# Download latest release VSIX
 gh release download --repo MaheshTechnicals/AI-IDE-Auto-Approve-Extension --pattern '*.vsix'
 ```
 
-### Step 2: Install in Your IDE
+### Step 2 — Install
 
-#### Google Antigravity IDE
-```bash
-antigravity --install-extension ai-ide-auto-approve-1.1.0.vsix --force
-```
-Or open **Extensions sidebar** → Click `...` → **"Install from VSIX..."** → Select the downloaded `.vsix` file.
+<table>
+<tr>
+<th>IDE</th>
+<th>CLI Command</th>
+<th>GUI Method</th>
+</tr>
+<tr>
+<td><strong>Google Antigravity</strong></td>
+<td><code>antigravity --install-extension ai-ide-auto-approve-1.1.0.vsix --force</code></td>
+<td>Extensions sidebar → <code>...</code> → "Install from VSIX..."</td>
+</tr>
+<tr>
+<td><strong>Kiro IDE</strong></td>
+<td><code>kiro --install-extension ai-ide-auto-approve-1.1.0.vsix --force</code></td>
+<td>Extensions (<code>Ctrl+Shift+X</code>) → <code>...</code> → "Install from VSIX..."</td>
+</tr>
+<tr>
+<td><strong>VS Code</strong></td>
+<td><code>code --install-extension ai-ide-auto-approve-1.1.0.vsix --force</code></td>
+<td>Extensions (<code>Ctrl+Shift+X</code>) → <code>...</code> → "Install from VSIX..."</td>
+</tr>
+</table>
 
-#### Kiro IDE
-```bash
-kiro --install-extension ai-ide-auto-approve-1.1.0.vsix --force
-```
-Or open **Extensions** (`Ctrl+Shift+X`) → Click `...` → **"Install from VSIX..."** → Select the downloaded `.vsix` file.
+### Build from Source (Optional)
 
-#### VS Code (with AI Agent Extensions)
 ```bash
-code --install-extension ai-ide-auto-approve-1.1.0.vsix --force
-```
-Or open **Extensions** (`Ctrl+Shift+X`) → Click `...` → **"Install from VSIX..."** → Select the downloaded `.vsix` file.
-
-### Step 3: Build from Source (Alternative)
-```bash
-# Clone the repository
 git clone https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension.git
 cd AI-IDE-Auto-Approve-Extension
-
-# Install dependencies and build
-npm install
-npm run build
-
-# Package VSIX
+npm install && npm run build
 npx @vscode/vsce package --no-dependencies
-
-# Install into your IDE
-antigravity --install-extension ai-ide-auto-approve-1.1.0.vsix --force
-# OR
-kiro --install-extension ai-ide-auto-approve-1.1.0.vsix --force
-# OR
-code --install-extension ai-ide-auto-approve-1.1.0.vsix --force
 ```
 
 ---
 
-## 🎯 How to Use
+## 🎯 Quick Start
 
-### 1. Activate / Pause
-Click the status bar item in the bottom right corner:
-- `⚡ Auto-Approve: ALL` — Currently active. Every popup/command is approved automatically in Full Autonomy mode.
-- `▶ Auto-Approve: OFF` — Currently paused. Click to enable.
-
-### 2. Toggle Safety Mode
-Open the Command Palette (`Ctrl+Shift+P`) and run:
-```text
-AI IDE Auto-Approve: Toggle Safety Checks On/Off
-```
-
-### 3. View Activity Logs
-- Run `AI IDE Auto-Approve: Show Recent Activity` to open an interactive modal listing recent approvals.
-- Run `AI IDE Auto-Approve: Show Logs` to open the dedicated Output channel.
+| Step | Action | Result |
+|---|---|---|
+| **1** | Click status bar item (bottom-right) | `⚡ Auto-Approve: ALL` = Active · `▶ Auto-Approve: OFF` = Paused |
+| **2** | `Ctrl+Shift+P` → `AI IDE Auto-Approve: Toggle Safety Checks On/Off` | Switch between Full Autonomy and Safety Denylist modes |
+| **3** | `Ctrl+Shift+P` → `AI IDE Auto-Approve: Show Recent Activity` | Inspect recent approvals/blocks with timestamps |
+| **4** | `Ctrl+Shift+P` → `AI IDE Auto-Approve: Show Logs` | Open dedicated Output channel for live logging |
 
 ---
 
-## ⚙️ Configuration Reference
+## ⚙️ Configuration
 
 Accessible via `Settings > Extensions > AI IDE Auto-Approve`:
 
 | Setting | Type | Default | Description |
 |---|---|---|---|
-| `aiIdeAutoApprove.enabled` | `boolean` | `true` | Master switch for the auto-approval polling loop. |
-| `aiIdeAutoApprove.safetyEnabled` | `boolean` | `false` | When `false` (Full Autonomy), all commands and popups are approved without restriction. When `true`, runs denylist checks. |
-| `aiIdeAutoApprove.pollIntervalSeconds` | `number` | `2` | Polling frequency in seconds (minimum: 1s). |
-| `aiIdeAutoApprove.enableKiro` | `boolean` | `true` | Enable native auto-approval monitoring for Kiro IDE. |
-| `aiIdeAutoApprove.enableAntigravity` | `boolean` | `true` | Enable native auto-approval monitoring for Google Antigravity IDE. |
-| `aiIdeAutoApprove.antigravityApproveCommands` | `string[]` | *(Array)* | Commands triggered to approve actions in Google Antigravity IDE. |
-| `aiIdeAutoApprove.approveCommandId` | `string` | `kiroAgent.execution.runOrAcceptAll` | Native Kiro command executed to confirm pending actions. |
-| `aiIdeAutoApprove.getPendingCommandId` | `string` | `""` | Optional command ID to fetch pending items. Leave empty for automatic session monitoring. |
-| `aiIdeAutoApprove.bannedKeywords` | `string[]` | *(See safety list)* | Regex patterns that block execution when safety check is enabled. |
-| `aiIdeAutoApprove.maxHistoryEntries` | `number` | `200` | Number of recent activity records kept in memory. |
+| `aiIdeAutoApprove.enabled` | `boolean` | `true` | Master switch for the auto-approval engine |
+| `aiIdeAutoApprove.safetyEnabled` | `boolean` | `false` | `false` = Full Autonomy (approve everything) · `true` = run denylist checks |
+| `aiIdeAutoApprove.pollIntervalSeconds` | `number` | `2` | Polling frequency in seconds (min: 1s) |
+| `aiIdeAutoApprove.enableKiro` | `boolean` | `true` | Enable Kiro IDE monitoring |
+| `aiIdeAutoApprove.enableAntigravity` | `boolean` | `true` | Enable Antigravity IDE monitoring |
+| `aiIdeAutoApprove.antigravityApproveCommands` | `string[]` | *(11 commands)* | Commands to fire for Antigravity approval |
+| `aiIdeAutoApprove.approveCommandId` | `string` | `kiroAgent.execution.runOrAcceptAll` | Kiro approval command |
+| `aiIdeAutoApprove.bannedKeywords` | `string[]` | *(22 regex patterns)* | Denylist patterns when safety is ON |
+| `aiIdeAutoApprove.maxHistoryEntries` | `number` | `200` | Max activity records in memory |
 
-*(Note: Legacy `kiroAutoApprove.*` configuration keys are also supported for full backward compatibility).*
+> Legacy `kiroAutoApprove.*` keys are fully supported for backward compatibility.
 
 ---
 
-## ⌨️ Command Palette Reference
+## ⌨️ Commands
 
-| Command ID | Title | Description |
-|---|---|---|
-| `aiIdeAutoApprove.toggle` | `AI IDE Auto-Approve: Toggle On/Off` | Toggles the approval loop ON or OFF. |
-| `aiIdeAutoApprove.toggleSafety` | `AI IDE Auto-Approve: Toggle Safety Checks On/Off` | Switches between Full Autonomy and Safety Denylist modes. |
-| `aiIdeAutoApprove.showHistory` | `AI IDE Auto-Approve: Show Recent Activity` | Opens a QuickPick viewer to inspect past decisions. |
-| `aiIdeAutoApprove.clearHistory` | `AI IDE Auto-Approve: Clear History` | Clears the in-memory decision history log. |
-| `aiIdeAutoApprove.addBannedKeyword` | `AI IDE Auto-Approve: Add Banned Keyword` | Prompts for a regex pattern and appends it to configuration. |
-| `aiIdeAutoApprove.dumpAvailableCommands`| `AI IDE Auto-Approve: Discover Editor Commands (Debug)` | Discovers all editor commands containing `kiro`, `antigravity`, or agent keywords. |
-| `aiIdeAutoApprove.openOutput` | `AI IDE Auto-Approve: Show Logs` | Displays the output log stream in the Output panel. |
+| Command | Description |
+|---|---|
+| `AI IDE Auto-Approve: Toggle On/Off` | Start or pause the approval engine |
+| `AI IDE Auto-Approve: Toggle Safety Checks On/Off` | Switch Full Autonomy ↔ Safety mode |
+| `AI IDE Auto-Approve: Show Recent Activity` | Interactive QuickPick activity viewer |
+| `AI IDE Auto-Approve: Clear History` | Reset the decision history log |
+| `AI IDE Auto-Approve: Add Banned Keyword` | Add a custom regex pattern to the denylist |
+| `AI IDE Auto-Approve: Discover Editor Commands` | Debug: enumerate all IDE commands |
+| `AI IDE Auto-Approve: Show Logs` | Open the live Output channel |
 
 ---
 
@@ -174,96 +261,87 @@ Accessible via `Settings > Extensions > AI IDE Auto-Approve`:
 
 ```mermaid
 flowchart TD
-    A[AI IDE: Kiro / Antigravity / VS Code] -->|Emits Actions / Prompts / Diffs| B[Internal Event Queue / Session Transcript]
-    C[AutoApproveEngine Poller] -->|Every N Seconds| D{Is Enabled?}
-    D -- No --> E[Idle / Paused]
-    D -- Yes --> F{Is Safety Enabled?}
-    F -- No - Full Autonomy --> G[Execute Native Approval Commands]
-    F -- Yes --> H[SafetyChecker Regex Denylist]
-    H -- Unsafe Match --> I[Log SKIPPED & Block Approval]
-    H -- Safe --> G
-    G --> J[Record to History Log & Output Channel]
+    A["🤖 AI Agent (Antigravity / Kiro / VS Code)"] -->|"Emits Actions, Prompts, Diffs"| B["📋 Event Queue / Session Transcript"]
+    C["⚡ AutoApproveEngine"] -->|"Poll Every N Seconds"| D{"Enabled?"}
+    D -- No --> E["💤 Idle"]
+    D -- Yes --> F{"Safety Enabled?"}
+    F -- "No (Full Autonomy)" --> G["✅ Execute Approval Commands"]
+    F -- Yes --> H["🛡️ SafetyChecker"]
+    H -- "❌ Unsafe" --> I["🚫 Block & Log SKIPPED"]
+    H -- "✅ Safe" --> G
+    G --> J["📊 Record to History & Output"]
+    
+    K["🗄️ state.vscdb"] <-->|"Protobuf Read/Write"| L["🔧 AntigravityStateManager"]
+    L -->|"Inject 180+ Grants"| K
 ```
 
 ---
 
-## 🛡️ Safety Denylist (Default Patterns)
+## 🛡️ Safety Denylist
 
-When safety mode is enabled (`aiIdeAutoApprove.safetyEnabled: true`), these dangerous patterns are blocked:
+When safety mode is enabled, these patterns are **blocked**:
 
 | Category | Blocked Patterns |
 |---|---|
-| **Destructive File Ops** | `rm -rf`, `rm -r -f`, `rm --recursive --force` |
-| **Privilege Escalation** | `sudo` |
-| **Disk Formatting** | `mkfs`, `dd if=`, `format C:` (Windows) |
-| **System Control** | `shutdown`, `reboot`, `passwd` |
-| **Remote Code Exec** | `curl \| sh`, `curl \| bash`, `wget \| sh` |
-| **Unsafe Permissions** | `chmod 777`, `chmod a+rwx` |
-| **Git Force Push** | `git push --force` |
-| **Database Destruction** | `DROP TABLE`, `DROP DATABASE`, `TRUNCATE TABLE` |
-| **Raw Disk Access** | `/dev/sd[a-z]` |
-| **Windows Registry** | `regedit`, `reg delete` |
-| **PowerShell Danger** | `Remove-Item -Recurse -Force`, `Set-ExecutionPolicy Bypass` |
-| **Reverse Shells** | `nc -e`, `/dev/tcp/` |
-| **Windows File Deletion** | `del /s`, `del /q`, `del /f` |
+| 🗑️ Destructive File Ops | `rm -rf`, `rm --recursive --force` |
+| 🔐 Privilege Escalation | `sudo` |
+| 💽 Disk Formatting | `mkfs`, `dd if=`, `format C:` |
+| ⚠️ System Control | `shutdown`, `reboot`, `passwd` |
+| 🌐 Remote Code Exec | `curl \| sh`, `curl \| bash`, `wget \| sh` |
+| 🔓 Unsafe Permissions | `chmod 777`, `chmod a+rwx` |
+| 📤 Git Force Push | `git push --force` |
+| 🗄️ Database Destruction | `DROP TABLE`, `DROP DATABASE`, `TRUNCATE` |
+| 💿 Raw Disk Access | `/dev/sd[a-z]` |
+| 🪟 Windows Registry | `regedit`, `reg delete` |
+| 💀 PowerShell Danger | `Remove-Item -Recurse -Force`, `Set-ExecutionPolicy Bypass` |
+| 🐚 Reverse Shells | `nc -e`, `/dev/tcp/` |
+| 🗂️ Windows File Deletion | `del /s`, `del /q`, `del /f` |
 
-All patterns are case-insensitive regex. You can add custom patterns via `AI IDE Auto-Approve: Add Banned Keyword` in the Command Palette.
+> Add custom patterns via Command Palette → `AI IDE Auto-Approve: Add Banned Keyword`
 
 ---
 
-## 🧪 Development & Testing
+## 🧪 Development
 
 ```bash
-# Clone the repository
 git clone https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension.git
 cd AI-IDE-Auto-Approve-Extension
-
-# Install dependencies
 npm install
 
-# Run unit tests (80 test cases)
-npm test
-
-# Run linter / typecheck
-npm run lint
-
-# Build production bundle via esbuild
-npm run build
-
-# Watch mode for extension development
-npm run watch
-
-# Package VSIX for distribution
-npx @vscode/vsce package --no-dependencies
+npm test          # 80 unit tests
+npm run lint      # TypeScript type check
+npm run build     # Production bundle (esbuild)
+npm run watch     # Dev mode with hot reload
 ```
 
-Press **`F5`** inside VS Code / Kiro IDE / Antigravity IDE to launch an Extension Development Host with live breakpoints and debugging.
+Press **`F5`** in your IDE to launch the Extension Development Host with live debugging.
 
 ---
 
-## 📋 Release History
+## 📋 Releases
 
-| Version | Date | Highlights |
-|---|---|---|
-| **v1.1.0** | 2026-09-18 | Cross-platform hardening: macOS Application Support paths, Linux XDG_CONFIG_HOME, 5-candidate path search |
-| **v1.0.0** | 2026-09-18 | Major milestone: 180+ command grants, native Protobuf USS injection, 80 tests |
-| **v0.4.0** | 2026-09-18 | Rebrand to "AI IDE Auto-Approve Extension", dual namespace support |
-| **v0.3.0** | 2026-09-18 | Google Antigravity IDE integration, dual-engine architecture |
-| **v0.2.3** | 2026-09-18 | Real-time decision counters, refined safety patterns |
-| **v0.2.0** | 2026-09-18 | Full Autonomy mode, safety toggle |
-| **v0.1.0** | 2026-09-18 | Initial release |
+| Version | Highlights |
+|---|---|
+| [**v1.1.0**](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/tag/v1.1.0) | 🌍 Cross-platform hardening: macOS Application Support, Linux XDG_CONFIG_HOME, 5-candidate path search |
+| [**v1.0.0**](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/tag/v1.0.0) | 🚀 Major milestone: 180+ grants, native Protobuf USS injection, 80 tests |
+| **v0.4.0** | 🔄 Rebrand to "AI IDE Auto-Approve", dual namespace support |
+| **v0.3.0** | 🔗 Google Antigravity IDE integration, dual-engine architecture |
+| **v0.2.x** | 📊 Decision counters, refined safety patterns, Full Autonomy mode |
+| **v0.1.0** | 🎉 Initial release |
 
-See full changelog in [CHANGELOG.md](CHANGELOG.md).
+See full changelog → [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/awesome-feature`)
-3. Commit your changes (`git commit -m 'Add awesome feature'`)
-4. Push to the branch (`git push origin feature/awesome-feature`)
-5. Open a Pull Request
+Contributions are welcome! Here's how:
+
+1. **Fork** the repository
+2. **Create** your feature branch → `git checkout -b feature/awesome-feature`
+3. **Commit** your changes → `git commit -m 'Add awesome feature'`
+4. **Push** to the branch → `git push origin feature/awesome-feature`
+5. **Open** a Pull Request
 
 ---
 
@@ -273,41 +351,42 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
+<div align="center">
+
 ## 💖 Support This Project
 
-If this extension saves you time and makes your AI coding sessions smoother, please consider supporting the project!
+If this extension saves you time, please consider supporting it!
 
-### ⭐ Star This Repository
-
-Give this repo a **star** on GitHub — it helps others discover this project and motivates continued development!
+<br/>
 
 <a href="https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension">
-  <img src="https://img.shields.io/github/stars/MaheshTechnicals/AI-IDE-Auto-Approve-Extension?style=social" alt="GitHub Stars" />
+  <img src="https://img.shields.io/github/stars/MaheshTechnicals/AI-IDE-Auto-Approve-Extension?style=for-the-badge&logo=github&label=Star%20on%20GitHub&color=yellow" alt="GitHub Stars" />
 </a>
 
-### ☕ Buy Me a Coffee
+<br/><br/>
 
 <a href="https://www.paypal.com/paypalme/Varma161" target="_blank">
   <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200" />
 </a>
 
-### 💰 Donate via PayPal
+<br/><br/>
 
 <a href="https://www.paypal.com/paypalme/Varma161" target="_blank">
-  <img src="https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal&style=for-the-badge" alt="Donate via PayPal" />
+  <img src="https://img.shields.io/badge/Donate_via-PayPal-00457C.svg?style=for-the-badge&logo=paypal&logoColor=white" alt="Donate via PayPal" />
 </a>
+
+<br/>
 
 **PayPal:** [paypal.me/Varma161](https://www.paypal.com/paypalme/Varma161)
 
-> Every contribution — whether it's a ⭐ star, a ☕ coffee, or a 💰 donation — keeps this project alive and growing. Thank you! 🙏
+<br/>
+
+> *Every ⭐ star, ☕ coffee, and 💰 donation keeps this project alive. Thank you!* 🙏
 
 ---
 
-<div align="center">
-
 **Made with ❤️ by [MaheshTechnicals](https://github.com/MaheshTechnicals)**
 
-[⬇️ Download Latest Release](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest) · [🐛 Report Bug](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues) · [✨ Request Feature](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues) · [💖 Support / Donate](https://www.paypal.com/paypalme/Varma161)
+[⬇️ Download](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest) · [🐛 Report Bug](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues) · [✨ Request Feature](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues) · [💖 Donate](https://www.paypal.com/paypalme/Varma161)
 
 </div>
-

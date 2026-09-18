@@ -126,4 +126,23 @@ describe('AutoApproveEngine Unit Tests', () => {
     const executed = vscode.commands.executedCommands.map((c: { cmd: string }) => c.cmd);
     assert.ok(executed.includes('antigravity.terminalCommand.run'));
   });
+
+  it('should reset activity counters and tracked ids to 0 when stopped or toggled', async () => {
+    logger.recordDecision('APPROVED', 'test cmd');
+    assert.strictEqual(logger.getStats().approved, 1);
+
+    const engineAny = engine as unknown as {
+      processedActionIds: Set<string>;
+      skippedIds: Set<string>;
+    };
+    engineAny.processedActionIds.add('action-1');
+    engineAny.skippedIds.add('action-2');
+
+    engine.stop();
+
+    assert.strictEqual(logger.getStats().approved, 0);
+    assert.strictEqual(logger.getStats().total, 0);
+    assert.strictEqual(engineAny.processedActionIds.size, 0);
+    assert.strictEqual(engineAny.skippedIds.size, 0);
+  });
 });

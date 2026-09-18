@@ -115,6 +115,13 @@ export class OutputLogger {
     this.info('History cleared by user.');
   }
 
+  public resetActivity(): void {
+    this.history = [];
+    this.approvedCount = 0;
+    this.skippedCount = 0;
+    this.errorCount = 0;
+  }
+
   public show(preserveFocus = true): void {
     this.channel.show(preserveFocus);
   }

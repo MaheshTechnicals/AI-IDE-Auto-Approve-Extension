@@ -83,4 +83,15 @@ describe('OutputLogger Unit Tests', () => {
     assert.strictEqual(resetStats.errors, 0);
     assert.strictEqual(resetStats.total, 0);
   });
+
+  it('should reset activity counters and history via resetActivity', () => {
+    logger.recordDecision('APPROVED', 'git push');
+    logger.recordDecision('SKIPPED', 'rm -rf /');
+    assert.strictEqual(logger.getStats().total, 2);
+    assert.strictEqual(logger.getHistory().length, 2);
+
+    logger.resetActivity();
+    assert.deepStrictEqual(logger.getStats(), { approved: 0, skipped: 0, errors: 0, total: 0 });
+    assert.strictEqual(logger.getHistory().length, 0);
+  });
 });

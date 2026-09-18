@@ -145,6 +145,13 @@ export class AutoApproveEngine {
     });
   }
 
+  public resetActivityState(): void {
+    this.skippedIds.clear();
+    this.processedActionIds.clear();
+    this.logger.resetActivity();
+    this.onStateChange(this.isRunning, this.getConfig().safetyEnabled, this.logger.getStats());
+  }
+
   public stop(): void {
     if (this.timer) {
       clearInterval(this.timer);
@@ -152,7 +159,7 @@ export class AutoApproveEngine {
     }
     this.isRunning = false;
     this.isPolling = false;
-    this.onStateChange(false, this.getConfig().safetyEnabled, this.logger.getStats());
+    this.resetActivityState();
   }
 
   public async toggle(): Promise<boolean> {
@@ -168,17 +175,17 @@ export class AutoApproveEngine {
         .update('enabled', targetState, vscode.ConfigurationTarget.Global);
     } catch {}
 
-    this.onStateChange(targetState, config.safetyEnabled, this.logger.getStats());
+    this.resetActivityState();
 
     if (targetState) {
       this.start();
       const modeText = config.safetyEnabled ? 'with Safety Checks' : 'ALL APPROVED (No Restrictions)';
       vscode.window.showInformationMessage(`AI IDE Auto-Approve: ENABLED (${modeText})`);
-      this.logger.info(`AI IDE Auto-Approve toggled ON by user (${modeText}).`);
+      this.logger.info(`AI IDE Auto-Approve toggled ON by user (${modeText}). Activity reset to 0.`);
     } else {
       this.stop();
       vscode.window.showInformationMessage('AI IDE Auto-Approve: PAUSED / OFF');
-      this.logger.info('AI IDE Auto-Approve toggled OFF by user.');
+      this.logger.info('AI IDE Auto-Approve toggled OFF by user. Activity reset to 0.');
     }
 
     return targetState;

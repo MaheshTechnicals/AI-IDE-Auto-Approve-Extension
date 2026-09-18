@@ -273,10 +273,41 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
+## 💖 Support This Project
+
+If this extension saves you time and makes your AI coding sessions smoother, please consider supporting the project!
+
+### ⭐ Star This Repository
+
+Give this repo a **star** on GitHub — it helps others discover this project and motivates continued development!
+
+<a href="https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension">
+  <img src="https://img.shields.io/github/stars/MaheshTechnicals/AI-IDE-Auto-Approve-Extension?style=social" alt="GitHub Stars" />
+</a>
+
+### ☕ Buy Me a Coffee
+
+<a href="https://www.buymeacoffee.com/MaheshTechnicals" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" width="200" />
+</a>
+
+### 💰 Donate via PayPal
+
+<a href="https://www.paypal.com/paypalme/Varma161" target="_blank">
+  <img src="https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal&style=for-the-badge" alt="Donate via PayPal" />
+</a>
+
+**PayPal:** [paypal.me/Varma161](https://www.paypal.com/paypalme/Varma161)
+
+> Every contribution — whether it's a ⭐ star, a ☕ coffee, or a 💰 donation — keeps this project alive and growing. Thank you! 🙏
+
+---
+
 <div align="center">
 
 **Made with ❤️ by [MaheshTechnicals](https://github.com/MaheshTechnicals)**
 
-[⬇️ Download Latest Release](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest) · [🐛 Report Bug](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues) · [✨ Request Feature](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues)
+[⬇️ Download Latest Release](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest) · [🐛 Report Bug](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues) · [✨ Request Feature](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues) · [💖 Support / Donate](https://www.paypal.com/paypalme/Varma161)
 
 </div>
+

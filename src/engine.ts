@@ -53,20 +53,37 @@ export class AutoApproveEngine {
   }
 
   public getConfig(): ExtensionConfig {
-    const config = vscode.workspace.getConfiguration('kiroAutoApprove');
-    const approveCmd = config.get<string>('approveCommandId', DEFAULT_APPROVE_COMMAND).trim();
+    const aiConfig = vscode.workspace.getConfiguration('aiIdeAutoApprove');
+    const kiroConfig = vscode.workspace.getConfiguration('kiroAutoApprove');
+
+    const getVal = <T>(key: string, defVal: T): T => {
+      if (typeof aiConfig.inspect === 'function') {
+        const inspectAi = aiConfig.inspect<T>(key);
+        if (
+          inspectAi &&
+          (inspectAi.globalValue !== undefined ||
+            inspectAi.workspaceValue !== undefined ||
+            inspectAi.workspaceFolderValue !== undefined)
+        ) {
+          return aiConfig.get<T>(key, defVal);
+        }
+      }
+      return kiroConfig.get<T>(key, aiConfig.get<T>(key, defVal));
+    };
+
+    const approveCmd = getVal<string>('approveCommandId', DEFAULT_APPROVE_COMMAND).trim();
 
     return {
-      enabled: config.get<boolean>('enabled', false),
-      safetyEnabled: config.get<boolean>('safetyEnabled', false),
-      pollIntervalSeconds: Math.max(1, config.get<number>('pollIntervalSeconds', 2)),
-      bannedKeywords: config.get<string[]>('bannedKeywords', []),
-      getPendingCommandId: config.get<string>('getPendingCommandId', '').trim(),
+      enabled: getVal<boolean>('enabled', false),
+      safetyEnabled: getVal<boolean>('safetyEnabled', false),
+      pollIntervalSeconds: Math.max(1, getVal<number>('pollIntervalSeconds', 2)),
+      bannedKeywords: getVal<string[]>('bannedKeywords', []),
+      getPendingCommandId: getVal<string>('getPendingCommandId', '').trim(),
       approveCommandId: approveCmd || DEFAULT_APPROVE_COMMAND,
-      maxHistoryEntries: config.get<number>('maxHistoryEntries', 200),
-      enableKiro: config.get<boolean>('enableKiro', true),
-      enableAntigravity: config.get<boolean>('enableAntigravity', true),
-      antigravityApproveCommands: config.get<string[]>(
+      maxHistoryEntries: getVal<number>('maxHistoryEntries', 200),
+      enableKiro: getVal<boolean>('enableKiro', true),
+      enableAntigravity: getVal<boolean>('enableAntigravity', true),
+      antigravityApproveCommands: getVal<string[]>(
         'antigravityApproveCommands',
         DEFAULT_ANTIGRAVITY_COMMANDS
       )
@@ -96,10 +113,10 @@ export class AutoApproveEngine {
     const targets = [
       config.enableKiro ? 'Kiro IDE' : null,
       config.enableAntigravity ? 'Google Antigravity' : null
-    ].filter(Boolean).join(' & ') || 'Custom';
+    ].filter(Boolean).join(' & ') || 'Universal';
 
     this.logger.info(
-      `Starting Auto-Approve loop (Interval: ${config.pollIntervalSeconds}s | Mode: ${modeDesc} | Targets: ${targets})`
+      `Starting AI IDE Auto-Approve loop (Interval: ${config.pollIntervalSeconds}s | Mode: ${modeDesc} | Targets: ${targets})`
     );
     this.onStateChange(true, config.safetyEnabled, this.logger.getStats());
 
@@ -131,20 +148,25 @@ export class AutoApproveEngine {
     const targetState = !config.enabled;
 
     await vscode.workspace
-      .getConfiguration('kiroAutoApprove')
+      .getConfiguration('aiIdeAutoApprove')
       .update('enabled', targetState, vscode.ConfigurationTarget.Global);
+    try {
+      await vscode.workspace
+        .getConfiguration('kiroAutoApprove')
+        .update('enabled', targetState, vscode.ConfigurationTarget.Global);
+    } catch {}
 
     this.onStateChange(targetState, config.safetyEnabled, this.logger.getStats());
 
     if (targetState) {
       this.start();
       const modeText = config.safetyEnabled ? 'with Safety Checks' : 'ALL APPROVED (No Restrictions)';
-      vscode.window.showInformationMessage(`Kiro Auto-Approve: ENABLED (${modeText})`);
-      this.logger.info(`Auto-Approve toggled ON by user (${modeText}).`);
+      vscode.window.showInformationMessage(`AI IDE Auto-Approve: ENABLED (${modeText})`);
+      this.logger.info(`AI IDE Auto-Approve toggled ON by user (${modeText}).`);
     } else {
       this.stop();
-      vscode.window.showInformationMessage('Kiro Auto-Approve: PAUSED / OFF');
-      this.logger.info('Auto-Approve toggled OFF by user.');
+      vscode.window.showInformationMessage('AI IDE Auto-Approve: PAUSED / OFF');
+      this.logger.info('AI IDE Auto-Approve toggled OFF by user.');
     }
 
     return targetState;
@@ -155,13 +177,18 @@ export class AutoApproveEngine {
     const targetSafety = !config.safetyEnabled;
 
     await vscode.workspace
-      .getConfiguration('kiroAutoApprove')
+      .getConfiguration('aiIdeAutoApprove')
       .update('safetyEnabled', targetSafety, vscode.ConfigurationTarget.Global);
+    try {
+      await vscode.workspace
+        .getConfiguration('kiroAutoApprove')
+        .update('safetyEnabled', targetSafety, vscode.ConfigurationTarget.Global);
+    } catch {}
 
     this.onStateChange(config.enabled, targetSafety, this.logger.getStats());
 
     const desc = targetSafety ? 'Safety Check ENABLED' : 'Safety Check DISABLED (ALL APPROVED)';
-    vscode.window.showInformationMessage(`Kiro Auto-Approve: ${desc}`);
+    vscode.window.showInformationMessage(`AI IDE Auto-Approve: ${desc}`);
     this.logger.info(`Safety setting changed: ${desc}`);
     return targetSafety;
   }

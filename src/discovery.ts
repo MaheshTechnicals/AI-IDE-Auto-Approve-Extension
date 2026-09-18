@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { OutputLogger } from './logger';
 
-export async function discoverKiroCommands(logger: OutputLogger): Promise<void> {
+export async function discoverEditorCommands(logger: OutputLogger): Promise<void> {
   logger.show(true);
   logger.info('====================================================');
-  logger.info('   AUTO-APPROVE: DISCOVERY MODE (KIRO & ANTIGRAVITY)');
+  logger.info('   AI IDE AUTO-APPROVE: DISCOVERY MODE');
   logger.info('====================================================');
 
   try {
@@ -124,3 +124,5 @@ export async function discoverKiroCommands(logger: OutputLogger): Promise<void> 
     vscode.window.showErrorMessage(`Discovery Mode failed: ${String(err)}`);
   }
 }
+
+export const discoverKiroCommands = discoverEditorCommands;

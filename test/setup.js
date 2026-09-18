@@ -32,8 +32,9 @@ const mockVscode = {
     getCommands: async () => []
   },
   workspace: {
-    getConfiguration: () => ({
+    getConfiguration: (section) => ({
       get: (_key, defaultVal) => defaultVal,
+      inspect: () => undefined,
       update: async () => undefined
     }),
     onDidChangeConfiguration: () => ({ dispose: () => {} })

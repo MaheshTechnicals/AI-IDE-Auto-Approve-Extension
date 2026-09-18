@@ -14,8 +14,8 @@ export class StatusBarController {
       vscode.StatusBarAlignment.Right,
       100
     );
-    this.statusBarItem.name = 'Kiro Auto-Approve';
-    this.statusBarItem.command = 'kiroAutoApprove.toggle';
+    this.statusBarItem.name = 'AI IDE Auto-Approve';
+    this.statusBarItem.command = 'aiIdeAutoApprove.toggle';
     this.update(false);
     this.statusBarItem.show();
   }
@@ -32,15 +32,15 @@ export class StatusBarController {
     if (enabled) {
       if (!safetyEnabled) {
         this.statusBarItem.text = '$(zap) Auto-Approve: ALL';
-        this.statusBarItem.tooltip = `Auto-Approve is ACTIVE in Full Autonomy mode (Kiro & Antigravity auto-approved).${statsSuffix}\n\nClick to Pause.`;
+        this.statusBarItem.tooltip = `AI IDE Auto-Approve is ACTIVE in Full Autonomy mode (Kiro, Antigravity, VS Code).${statsSuffix}\n\nClick to Pause.`;
       } else {
         this.statusBarItem.text = '$(debug-pause) Auto-Approve: ON';
-        this.statusBarItem.tooltip = `Auto-Approve is ACTIVE with safety checks (Kiro & Antigravity).${statsSuffix}\n\nClick to Pause.`;
+        this.statusBarItem.tooltip = `AI IDE Auto-Approve is ACTIVE with safety checks (Kiro, Antigravity, VS Code).${statsSuffix}\n\nClick to Pause.`;
       }
       this.statusBarItem.backgroundColor = undefined;
     } else {
       this.statusBarItem.text = '$(play) Auto-Approve: OFF';
-      this.statusBarItem.tooltip = `Auto-Approve is OFF.${statsSuffix}\n\nClick to Enable.`;
+      this.statusBarItem.tooltip = `AI IDE Auto-Approve is OFF.${statsSuffix}\n\nClick to Enable.`;
       this.statusBarItem.backgroundColor = undefined;
     }
   }

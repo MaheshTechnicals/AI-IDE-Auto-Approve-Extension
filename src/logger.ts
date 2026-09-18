@@ -9,7 +9,7 @@ export class OutputLogger {
   private skippedCount: number = 0;
   private errorCount: number = 0;
 
-  constructor(channelName: string = 'Kiro Auto-Approve', maxEntries: number = 200) {
+  constructor(channelName: string = 'AI IDE Auto-Approve', maxEntries: number = 200) {
     this.channel = vscode.window.createOutputChannel(channelName);
     this.maxHistoryEntries = maxEntries;
   }

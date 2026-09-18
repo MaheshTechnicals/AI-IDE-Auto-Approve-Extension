@@ -1,21 +1,22 @@
 {
-  "name": "kiro-auto-approve",
-  "displayName": "Kiro & Antigravity Auto-Approve",
-  "description": "Safe auto-approval engine for Kiro IDE and Google Antigravity AI agent workflows with zero screen automation.",
-  "version": "0.3.0",
+  "name": "ai-ide-auto-approve",
+  "displayName": "AI IDE Auto-Approve Extension",
+  "description": "Universal autonomous auto-approval extension for AI IDEs (Kiro IDE, Google Antigravity IDE, VS Code). Automatically executes and approves terminal commands, file diffs, and agent proposals with zero interruptions.",
+  "version": "0.4.0",
   "publisher": "MaheshTechnicals",
   "author": "MaheshTechnicals",
   "license": "MIT",
   "icon": "icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension.git"
+    "url": "https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension.git"
   },
-  "homepage": "https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension#readme",
+  "homepage": "https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension#readme",
   "bugs": {
-    "url": "https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension/issues"
+    "url": "https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/issues"
   },
   "keywords": [
+    "ai-ide",
     "kiro",
     "kiro-ide",
     "antigravity",
@@ -42,54 +43,82 @@
   "contributes": {
     "commands": [
       {
+        "command": "aiIdeAutoApprove.toggle",
+        "title": "AI IDE Auto-Approve: Toggle On/Off"
+      },
+      {
+        "command": "aiIdeAutoApprove.toggleSafety",
+        "title": "AI IDE Auto-Approve: Toggle Safety Checks On/Off"
+      },
+      {
+        "command": "aiIdeAutoApprove.showHistory",
+        "title": "AI IDE Auto-Approve: Show Recent Activity"
+      },
+      {
+        "command": "aiIdeAutoApprove.clearHistory",
+        "title": "AI IDE Auto-Approve: Clear History"
+      },
+      {
+        "command": "aiIdeAutoApprove.addBannedKeyword",
+        "title": "AI IDE Auto-Approve: Add Banned Keyword"
+      },
+      {
+        "command": "aiIdeAutoApprove.dumpAvailableCommands",
+        "title": "AI IDE Auto-Approve: Discover Editor Commands (Debug)"
+      },
+      {
+        "command": "aiIdeAutoApprove.openOutput",
+        "title": "AI IDE Auto-Approve: Show Logs"
+      },
+      {
         "command": "kiroAutoApprove.toggle",
-        "title": "Kiro Auto-Approve: Toggle On/Off"
+        "title": "AI IDE Auto-Approve: Toggle On/Off (Legacy)"
       },
       {
         "command": "kiroAutoApprove.toggleSafety",
-        "title": "Kiro Auto-Approve: Toggle Safety Checks On/Off"
+        "title": "AI IDE Auto-Approve: Toggle Safety Checks On/Off (Legacy)"
       },
       {
         "command": "kiroAutoApprove.showHistory",
-        "title": "Kiro Auto-Approve: Show Recent Activity"
+        "title": "AI IDE Auto-Approve: Show Recent Activity (Legacy)"
       },
       {
         "command": "kiroAutoApprove.clearHistory",
-        "title": "Kiro Auto-Approve: Clear History"
+        "title": "AI IDE Auto-Approve: Clear History (Legacy)"
       },
       {
         "command": "kiroAutoApprove.addBannedKeyword",
-        "title": "Kiro Auto-Approve: Add Banned Keyword"
+        "title": "AI IDE Auto-Approve: Add Banned Keyword (Legacy)"
       },
       {
         "command": "kiroAutoApprove.dumpAvailableCommands",
-        "title": "Kiro Auto-Approve: Discover Kiro Commands (Debug)"
+        "title": "AI IDE Auto-Approve: Discover Editor Commands (Legacy)"
       },
       {
         "command": "kiroAutoApprove.openOutput",
-        "title": "Kiro Auto-Approve: Show Logs"
+        "title": "AI IDE Auto-Approve: Show Logs (Legacy)"
       }
     ],
     "configuration": {
-      "title": "Kiro Auto-Approve",
+      "title": "AI IDE Auto-Approve",
       "properties": {
-        "kiroAutoApprove.enabled": {
+        "aiIdeAutoApprove.enabled": {
           "type": "boolean",
           "default": false,
           "description": "Enable or disable automatic approval loop."
         },
-        "kiroAutoApprove.safetyEnabled": {
+        "aiIdeAutoApprove.safetyEnabled": {
           "type": "boolean",
           "default": false,
           "description": "Enable safety checks. When false (default / Full Autonomy), all popups and commands are approved without any restrictions."
         },
-        "kiroAutoApprove.pollIntervalSeconds": {
+        "aiIdeAutoApprove.pollIntervalSeconds": {
           "type": "number",
           "default": 2,
           "minimum": 1,
           "description": "Interval in seconds between checks for pending agent approval requests."
         },
-        "kiroAutoApprove.bannedKeywords": {
+        "aiIdeAutoApprove.bannedKeywords": {
           "type": "array",
           "items": {
             "type": "string"
@@ -120,32 +149,121 @@
           ],
           "description": "Regex patterns matching dangerous actions that must NEVER be auto-approved (case-insensitive)."
         },
-        "kiroAutoApprove.getPendingCommandId": {
+        "aiIdeAutoApprove.getPendingCommandId": {
           "type": "string",
           "default": "",
-          "description": "Command ID used to fetch pending executions. Leave empty for automatic Kiro session monitoring, or specify a custom command ID."
+          "description": "Command ID used to fetch pending executions. Leave empty for automatic session monitoring, or specify a custom command ID."
         },
-        "kiroAutoApprove.approveCommandId": {
+        "aiIdeAutoApprove.approveCommandId": {
           "type": "string",
           "default": "kiroAgent.execution.runOrAcceptAll",
           "description": "Command ID used to approve pending executions. Defaults to Kiro IDE's native 'kiroAgent.execution.runOrAcceptAll'."
         },
-        "kiroAutoApprove.maxHistoryEntries": {
+        "aiIdeAutoApprove.maxHistoryEntries": {
           "type": "number",
           "default": 200,
           "minimum": 10,
           "maximum": 1000,
           "description": "Maximum number of recent actions retained in the in-memory activity log."
         },
-        "kiroAutoApprove.enableKiro": {
+        "aiIdeAutoApprove.enableKiro": {
           "type": "boolean",
           "default": true,
           "description": "Enable native auto-approval monitoring for Kiro IDE."
         },
-        "kiroAutoApprove.enableAntigravity": {
+        "aiIdeAutoApprove.enableAntigravity": {
           "type": "boolean",
           "default": true,
           "description": "Enable native auto-approval monitoring for Google Antigravity IDE (terminal commands, diffs, completions)."
+        },
+        "aiIdeAutoApprove.antigravityApproveCommands": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "antigravity.command.accept",
+            "antigravity.terminalCommand.run",
+            "antigravity.terminalCommand.accept",
+            "antigravity.prioritized.agentAcceptAllInFile",
+            "antigravity.prioritized.agentAcceptFocusedHunk",
+            "workbench.action.acceptSelectedQuickOpenItem"
+          ],
+          "description": "Commands triggered to approve actions in Google Antigravity IDE."
+        },
+        "kiroAutoApprove.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Legacy fallback: Enable or disable automatic approval loop."
+        },
+        "kiroAutoApprove.safetyEnabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Legacy fallback: Enable safety checks."
+        },
+        "kiroAutoApprove.pollIntervalSeconds": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "description": "Legacy fallback: Interval in seconds between checks for pending requests."
+        },
+        "kiroAutoApprove.bannedKeywords": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "\\brm\\s+.*(-[a-zA-Z]*r[a-zA-Z]*f|-[a-zA-Z]*f[a-zA-Z]*r|(-[a-zA-Z]*r[a-zA-Z]*\\s+.*-[a-zA-Z]*f)|(-[a-zA-Z]*f[a-zA-Z]*\\s+.*-[a-zA-Z]*r)|--recursive.*--force|--force.*--recursive)",
+            "\\bsudo\\b",
+            "\\bmkfs\\b",
+            "\\bdd\\s+if=",
+            "\\bformat\\s+[a-zA-Z]:",
+            "\\bdel\\s+.*(/s|/q|/f)\\b",
+            "\\bshutdown\\b",
+            "\\breboot\\b",
+            "\\bpasswd\\b",
+            "curl.*\\|.*(sh|bash|zsh)",
+            "wget.*\\|.*(sh|bash|zsh)",
+            "chmod\\s+(-R\\s+)?(777|a\\+rwx)",
+            "git\\s+push\\s+.*--force",
+            "\\bdrop\\s+(table|database)\\b",
+            "\\btruncate\\s+(table\\s+)?[a-zA-Z0-9_`\"\\[\\]]+",
+            "/dev/sd[a-z]",
+            "\\bregedit\\b",
+            "\\breg\\s+delete\\b",
+            "Remove-Item.*-Recurse.*-Force",
+            "Set-ExecutionPolicy\\s+Bypass",
+            "nc\\s+-e",
+            "/dev/tcp/"
+          ],
+          "description": "Legacy fallback: Regex patterns matching dangerous actions."
+        },
+        "kiroAutoApprove.getPendingCommandId": {
+          "type": "string",
+          "default": "",
+          "description": "Legacy fallback: Command ID used to fetch pending executions."
+        },
+        "kiroAutoApprove.approveCommandId": {
+          "type": "string",
+          "default": "kiroAgent.execution.runOrAcceptAll",
+          "description": "Legacy fallback: Command ID used to approve pending executions."
+        },
+        "kiroAutoApprove.maxHistoryEntries": {
+          "type": "number",
+          "default": 200,
+          "minimum": 10,
+          "maximum": 1000,
+          "description": "Legacy fallback: Maximum number of recent actions in memory."
+        },
+        "kiroAutoApprove.enableKiro": {
+          "type": "boolean",
+          "default": true,
+          "description": "Legacy fallback: Enable native auto-approval monitoring for Kiro IDE."
+        },
+        "kiroAutoApprove.enableAntigravity": {
+          "type": "boolean",
+          "default": true,
+          "description": "Legacy fallback: Enable native auto-approval monitoring for Google Antigravity IDE."
         },
         "kiroAutoApprove.antigravityApproveCommands": {
           "type": "array",
@@ -160,7 +278,7 @@
             "antigravity.prioritized.agentAcceptFocusedHunk",
             "workbench.action.acceptSelectedQuickOpenItem"
           ],
-          "description": "Commands triggered to approve actions in Google Antigravity IDE."
+          "description": "Legacy fallback: Commands triggered to approve actions in Google Antigravity IDE."
         }
       }
     }

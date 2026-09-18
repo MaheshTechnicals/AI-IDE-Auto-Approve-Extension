@@ -1,6 +1,6 @@
-# Contributing to Kiro Auto-Approve
+# Contributing to AI IDE Auto-Approve Extension
 
-Thank you for your interest in improving **Kiro Auto-Approve**! We welcome bug reports, feature suggestions, and code contributions.
+Thank you for your interest in improving **AI IDE Auto-Approve Extension**! We welcome bug reports, feature suggestions, and code contributions.
 
 ---
 
@@ -9,12 +9,12 @@ Thank you for your interest in improving **Kiro Auto-Approve**! We welcome bug r
 1. **Prerequisites**:
    - Node.js >= 18.x
    - npm >= 9.x
-   - VS Code or Kiro IDE
+   - VS Code, Kiro IDE, or Google Antigravity IDE
 
 2. **Clone & Install**:
    ```bash
-   git clone https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension.git
-   cd kiro-Auto-Approve-Extension
+   git clone https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension.git
+   cd AI-IDE-Auto-Approve-Extension
    npm install
    ```
 

@@ -1,14 +1,14 @@
 <div align="center">
 
-<img src="logo/logo.png" alt="Kiro & Antigravity Auto-Approve Logo" width="140" height="140" />
+<img src="logo/logo.png" alt="AI IDE Auto-Approve Logo" width="140" height="140" />
 
-# ⚡ Kiro & Google Antigravity Auto-Approve
+# ⚡ AI IDE Auto-Approve Extension
 
-**The ultra-fast, 100% native auto-approval extension for Kiro IDE & Google Antigravity AI Agent workflows.**
+**The universal, ultra-fast, 100% native auto-approval extension for AI-powered IDEs (Kiro IDE, Google Antigravity IDE, VS Code).**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.3.0-green.svg)](package.json)
-[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension)
+[![Version](https://img.shields.io/badge/version-0.4.0-green.svg)](package.json)
+[![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey.svg)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension)
 [![Engine](https://img.shields.io/badge/VS%20Code%20%2F%20Kiro%20%2F%20Antigravity-%5E1.85.0-blueviolet.svg)](package.json)
 [![Tests](https://img.shields.io/badge/tests-74%20passing-brightgreen.svg)](test/safety.test.ts)
 
@@ -18,18 +18,18 @@
 
 ## 🌟 Overview
 
-**Kiro & Antigravity Auto-Approve** is a specialized VS Code extension engineered for **Kiro IDE** and **Google Antigravity IDE** (AI-first developer environments).
+**AI IDE Auto-Approve Extension** is a universal VS Code extension engineered for **Kiro IDE**, **Google Antigravity IDE**, and **VS Code AI agents**.
 
-During active AI coding sessions, AI agents regularly prompt you to confirm terminal executions, file modifications, tool calls, and API fetches. **Auto-Approve** runs a lightweight native background loop that automatically approves these requests in real-time, eliminating interruptions while maintaining complete user control.
+During active AI coding sessions, AI agents regularly prompt you to confirm terminal executions, file modifications, tool calls, diff reviews, and API fetches. **AI IDE Auto-Approve** runs a lightweight native background loop that automatically approves these requests in real-time, eliminating interruptions while maintaining complete user control.
 
 ---
 
 ## 🚀 Key Features
 
-- ⚡ **Zero Screen Automation / No OCR**: Works 100% through native extension host APIs and internal Kiro & Antigravity execution handlers (`kiroAgent.execution.runOrAcceptAll`, `antigravity.command.accept`, `antigravity.terminalCommand.run`, `antigravity.prioritized.agentAcceptAllInFile`). Zero mouse simulation, zero pixel scraping, zero OCR delays. Works reliably over VNC, SSH remote, WSL, or background headless servers.
+- ⚡ **Zero Screen Automation / No OCR**: Works 100% through native Extension Host APIs, session transcript inspection, and internal execution handlers (`antigravity.command.accept`, `antigravity.terminalCommand.run`, `antigravity.prioritized.agentAcceptAllInFile`, `kiroAgent.execution.runOrAcceptAll`). Zero mouse simulation, zero pixel scraping, zero OCR delays. Works reliably over VNC, SSH remote, WSL, and headless setups.
 - 🔓 **Full Autonomy / Unrestricted Mode**: Auto-approves all agent tool calls, terminal commands, diff hunks, and popups immediately without restrictions.
 - 🛡️ **Optional Security Denylist**: When safety mode is enabled, pending actions are evaluated against a configurable regex denylist covering destructive operations (`rm -rf`, `sudo`, `mkfs`, `format`, `curl | sh`, `drop table`, reverse shells).
-- 🔍 **Discovery-First Architecture**: Built-in discovery command (`kiroAutoApprove.dumpAvailableCommands`) that dynamically enumerates registered Kiro and Antigravity commands and extension exports.
+- 🔍 **Discovery-First Architecture**: Built-in discovery command (`aiIdeAutoApprove.dumpAvailableCommands`) that dynamically enumerates registered Kiro and Antigravity commands and extension exports.
 - 🖥️ **Status Bar Controller**: Visual indicator on the bottom status bar with one-click toggling (`$(zap) Auto-Approve: ALL` / `$(play) Auto-Approve: OFF`) and live stats counter in the tooltip.
 - 📜 **Audit History**: In-memory activity log with interactive QuickPick review to inspect recent actions with timestamps and payloads.
 
@@ -38,22 +38,22 @@ During active AI coding sessions, AI agents regularly prompt you to confirm term
 ## 📦 Quick Installation
 
 ### Option 1: Install Pre-built `.vsix` in Kiro IDE
-1. Download [kiro-auto-approve-0.3.0.vsix](file:///root/projects/AutoRun/kiro-auto-approve-0.3.0.vsix).
+1. Download [ai-ide-auto-approve-0.4.0.vsix](file:///root/projects/AutoRun/ai-ide-auto-approve-0.4.0.vsix).
 2. In **Kiro IDE**, open Extensions (`Ctrl+Shift+X`).
-3. Click `...` > **"Install from VSIX..."** and select `kiro-auto-approve-0.3.0.vsix`.
+3. Click `...` > **"Install from VSIX..."** and select `ai-ide-auto-approve-0.4.0.vsix`.
 
 ### Option 2: Install in Google Antigravity IDE
 Run via CLI:
 ```bash
-antigravity --install-extension kiro-auto-approve-0.3.0.vsix --force
+antigravity --install-extension ai-ide-auto-approve-0.4.0.vsix --force
 ```
 Or install directly via Extensions sidebar in Antigravity IDE.
 
 ### Option 3: Build & Install via CLI
 ```bash
 # Clone the repository
-git clone https://github.com/MaheshTechnicals/kiro-Auto-Approve-Extension.git
-cd kiro-Auto-Approve-Extension
+git clone https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension.git
+cd AI-IDE-Auto-Approve-Extension
 
 # Install dependencies and build bundle
 npm install
@@ -62,8 +62,9 @@ npm run build
 # Package VSIX
 npx @vscode/vsce package --no-dependencies
 
-# Install directly into Kiro
-kiro --install-extension kiro-auto-approve-0.3.0.vsix --force
+# Install directly into Kiro or Antigravity
+kiro --install-extension ai-ide-auto-approve-0.4.0.vsix --force
+antigravity --install-extension ai-ide-auto-approve-0.4.0.vsix --force
 ```
 
 ---
@@ -72,34 +73,39 @@ kiro --install-extension kiro-auto-approve-0.3.0.vsix --force
 
 1. **Activate / Pause**:
    Click the status bar item in the bottom right corner:
-   - `⚡ Auto-Approve: ALL (No Restrictions)` — Currently active. Every popup/command is approved automatically.
+   - `⚡ Auto-Approve: ALL` — Currently active. Every popup/command is approved automatically in Full Autonomy mode.
    - `▶ Auto-Approve: OFF` — Currently paused.
 
 2. **Toggle Safety Mode**:
    Open the Command Palette (`Ctrl+Shift+P`) and run:
    ```text
-   Kiro Auto-Approve: Toggle Safety Checks On/Off
+   AI IDE Auto-Approve: Toggle Safety Checks On/Off
    ```
 
 3. **View Activity Logs**:
-   - Run `Kiro Auto-Approve: Show Recent Activity` to open an interactive modal listing recent approvals.
-   - Run `Kiro Auto-Approve: Show Logs` to open the dedicated Output channel.
+   - Run `AI IDE Auto-Approve: Show Recent Activity` to open an interactive modal listing recent approvals.
+   - Run `AI IDE Auto-Approve: Show Logs` to open the dedicated Output channel.
 
 ---
 
 ## ⚙️ Configuration Reference
 
-Accessible via `Settings > Extensions > Kiro Auto-Approve`:
+Accessible via `Settings > Extensions > AI IDE Auto-Approve`:
 
 | Setting | Type | Default | Description |
 |---|---|---|---|
-| `kiroAutoApprove.enabled` | `boolean` | `true` | Master switch for the auto-approval polling loop. |
-| `kiroAutoApprove.safetyEnabled` | `boolean` | `false` | When `false` (Full Autonomy), all commands and popups are approved without restriction. When `true`, runs denylist checks. |
-| `kiroAutoApprove.pollIntervalSeconds` | `number` | `2` | Polling frequency in seconds (minimum: 1s). |
-| `kiroAutoApprove.approveCommandId` | `string` | `kiroAgent.execution.runOrAcceptAll` | Native Kiro command executed to confirm pending actions. |
-| `kiroAutoApprove.getPendingCommandId` | `string` | `""` | Optional command ID to fetch pending items. Leave empty for automatic session monitoring. |
-| `kiroAutoApprove.bannedKeywords` | `string[]` | *(See safety list)* | Regex patterns that block execution when safety check is enabled. |
-| `kiroAutoApprove.maxHistoryEntries` | `number` | `200` | Number of recent activity records kept in memory. |
+| `aiIdeAutoApprove.enabled` | `boolean` | `true` | Master switch for the auto-approval polling loop. |
+| `aiIdeAutoApprove.safetyEnabled` | `boolean` | `false` | When `false` (Full Autonomy), all commands and popups are approved without restriction. When `true`, runs denylist checks. |
+| `aiIdeAutoApprove.pollIntervalSeconds` | `number` | `2` | Polling frequency in seconds (minimum: 1s). |
+| `aiIdeAutoApprove.enableKiro` | `boolean` | `true` | Enable native auto-approval monitoring for Kiro IDE. |
+| `aiIdeAutoApprove.enableAntigravity` | `boolean` | `true` | Enable native auto-approval monitoring for Google Antigravity IDE. |
+| `aiIdeAutoApprove.antigravityApproveCommands` | `string[]` | *(Array)* | Commands triggered to approve actions in Google Antigravity IDE. |
+| `aiIdeAutoApprove.approveCommandId` | `string` | `kiroAgent.execution.runOrAcceptAll` | Native Kiro command executed to confirm pending actions. |
+| `aiIdeAutoApprove.getPendingCommandId` | `string` | `""` | Optional command ID to fetch pending items. Leave empty for automatic session monitoring. |
+| `aiIdeAutoApprove.bannedKeywords` | `string[]` | *(See safety list)* | Regex patterns that block execution when safety check is enabled. |
+| `aiIdeAutoApprove.maxHistoryEntries` | `number` | `200` | Number of recent activity records kept in memory. |
+
+*(Note: Legacy `kiroAutoApprove.*` configuration keys are also supported for full backward compatibility).*
 
 ---
 
@@ -107,13 +113,13 @@ Accessible via `Settings > Extensions > Kiro Auto-Approve`:
 
 | Command ID | Title | Description |
 |---|---|---|
-| `kiroAutoApprove.toggle` | `Kiro Auto-Approve: Toggle On/Off` | Toggles the approval loop ON or OFF. |
-| `kiroAutoApprove.toggleSafety` | `Kiro Auto-Approve: Toggle Safety Checks On/Off` | Switches between Full Autonomy and Safety Denylist modes. |
-| `kiroAutoApprove.showHistory` | `Kiro Auto-Approve: Show Recent Activity` | Opens a QuickPick viewer to inspect past decisions. |
-| `kiroAutoApprove.clearHistory` | `Kiro Auto-Approve: Clear History` | Clears the in-memory decision history log. |
-| `kiroAutoApprove.addBannedKeyword` | `Kiro Auto-Approve: Add Banned Keyword` | Prompts for a regex pattern and appends it to configuration. |
-| `kiroAutoApprove.dumpAvailableCommands`| `Kiro Auto-Approve: Discover Kiro Commands (Debug)` | Discovers all editor commands containing `kiro` or agent keywords. |
-| `kiroAutoApprove.openOutput` | `Kiro Auto-Approve: Show Logs` | Displays the output log stream in the Output panel. |
+| `aiIdeAutoApprove.toggle` | `AI IDE Auto-Approve: Toggle On/Off` | Toggles the approval loop ON or OFF. |
+| `aiIdeAutoApprove.toggleSafety` | `AI IDE Auto-Approve: Toggle Safety Checks On/Off` | Switches between Full Autonomy and Safety Denylist modes. |
+| `aiIdeAutoApprove.showHistory` | `AI IDE Auto-Approve: Show Recent Activity` | Opens a QuickPick viewer to inspect past decisions. |
+| `aiIdeAutoApprove.clearHistory` | `AI IDE Auto-Approve: Clear History` | Clears the in-memory decision history log. |
+| `aiIdeAutoApprove.addBannedKeyword` | `AI IDE Auto-Approve: Add Banned Keyword` | Prompts for a regex pattern and appends it to configuration. |
+| `aiIdeAutoApprove.dumpAvailableCommands`| `AI IDE Auto-Approve: Discover Editor Commands (Debug)` | Discovers all editor commands containing `kiro`, `antigravity`, or agent keywords. |
+| `aiIdeAutoApprove.openOutput` | `AI IDE Auto-Approve: Show Logs` | Displays the output log stream in the Output panel. |
 
 ---
 
@@ -121,11 +127,11 @@ Accessible via `Settings > Extensions > Kiro Auto-Approve`:
 
 ```mermaid
 flowchart TD
-    A[Kiro IDE Agent Session] -->|Emits Tool Actions / Popups| B[Kiro Internal Event Queue]
+    A[AI IDE: Kiro / Antigravity / VS Code] -->|Emits Actions / Prompts / Diffs| B[Internal Event Queue / Session Transcript]
     C[AutoApproveEngine Poller] -->|Every N Seconds| D{Is Enabled?}
     D -- No --> E[Idle / Paused]
     D -- Yes --> F{Is Safety Enabled?}
-    F -- No (Full Autonomy) --> G[Execute kiroAgent.execution.runOrAcceptAll]
+    F -- No (Full Autonomy) --> G[Execute Native Approval Commands]
     F -- Yes --> H[SafetyChecker Regex Denylist]
     H -- Unsafe Match --> I[Log SKIPPED & Block Approval]
     H -- Safe --> G
@@ -137,7 +143,7 @@ flowchart TD
 ## 🧪 Development & Testing
 
 ```bash
-# Run unit tests (54 test cases covering all regex rules and extraction payloads)
+# Run unit tests (74 test cases covering all regex rules, extraction payloads, and multi-IDE dispatch)
 npm test
 
 # Run linter / typecheck
@@ -150,7 +156,7 @@ npm run build
 npm run watch
 ```
 
-Press **`F5`** inside VS Code / Kiro IDE to launch an Extension Development Host with live breakpoints and debugging.
+Press **`F5`** inside VS Code / Kiro IDE / Antigravity IDE to launch an Extension Development Host with live breakpoints and debugging.
 
 ---
 

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] - 2026-09-18
+
+### Changed
+- **Rebrand to "AI IDE Auto-Approve Extension"**: Universal autonomous auto-approval extension for AI IDEs (Kiro IDE, Google Antigravity IDE, VS Code).
+- **GitHub Repository Renamed**: Renamed repository to `MaheshTechnicals/AI-IDE-Auto-Approve-Extension`.
+- **Primary Commands & Settings**: Migrated primary command and configuration namespace to `aiIdeAutoApprove.*` (`aiIdeAutoApprove.toggle`, `aiIdeAutoApprove.toggleSafety`, etc.).
+- **Backwards Compatibility**: Fully preserved `kiroAutoApprove.*` aliases for all commands and settings.
+- **Enhanced Dialog Acceptance**: Added `workbench.action.acceptSelectedQuickOpenItem` to Antigravity approval actions to seamlessly handle interactive permission modals.
+
+---
+
 ## [0.3.0] - 2026-09-18
 
 ### Added

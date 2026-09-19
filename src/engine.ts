@@ -39,6 +39,7 @@ export class AutoApproveEngine {
   private safetyChecker: SafetyChecker;
   private logger: OutputLogger;
   private onStateChange: (enabled: boolean, safetyEnabled: boolean, stats?: StatusBarStats) => void;
+  private onApproval?: () => void;
   private skippedIds: Set<string> = new Set();
   private processedActionIds: Set<string> = new Set();
   // Permanent cross-session dedup set — never evicted within a single ON session.
@@ -59,11 +60,13 @@ export class AutoApproveEngine {
   constructor(
     safetyChecker: SafetyChecker,
     logger: OutputLogger,
-    onStateChange: (enabled: boolean, safetyEnabled: boolean, stats?: StatusBarStats) => void
+    onStateChange: (enabled: boolean, safetyEnabled: boolean, stats?: StatusBarStats) => void,
+    onApproval?: () => void
   ) {
     this.safetyChecker = safetyChecker;
     this.logger = logger;
     this.onStateChange = onStateChange;
+    this.onApproval = onApproval;
   }
 
   public getConfig(): ExtensionConfig {
@@ -390,9 +393,11 @@ export class AutoApproveEngine {
           anyUnsafe = true;
         } else {
           this.logger.recordDecision('APPROVED', action.text, 'Passed safety check', action.raw);
+          this.onApproval?.(); // ✨ Trigger approval flash animation
         }
       } else {
         this.logger.recordDecision('APPROVED', action.text, 'All Approved (No Restrictions)', action.raw);
+        this.onApproval?.(); // ✨ Trigger approval flash animation
       }
     }
 
@@ -462,6 +467,7 @@ export class AutoApproveEngine {
             'Passed safety check (Antigravity)',
             action.raw
           );
+          this.onApproval?.(); // ✨ Trigger approval flash animation
         }
       } else {
         this.logger.recordDecision(
@@ -470,6 +476,7 @@ export class AutoApproveEngine {
           'All Approved (Antigravity Full Autonomy)',
           action.raw
         );
+        this.onApproval?.(); // ✨ Trigger approval flash animation
       }
     }
 

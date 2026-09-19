@@ -37,9 +37,17 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push({ dispose: () => statusBar?.dispose() });
 
   // Initialize Engine
-  engine = new AutoApproveEngine(safetyChecker, logger, (enabled, safetyEnabled, stats) => {
-    statusBar?.update(enabled, safetyEnabled, stats);
-  });
+  engine = new AutoApproveEngine(
+    safetyChecker,
+    logger,
+    (enabled, safetyEnabled, stats) => {
+      statusBar?.update(enabled, safetyEnabled, stats);
+    },
+    () => {
+      // ✨ Approval flash: shine the status bar button on every auto-approval
+      statusBar?.triggerApprovalFlash();
+    }
+  );
   context.subscriptions.push({ dispose: () => engine?.dispose() });
 
   // Start engine if configured and enabled

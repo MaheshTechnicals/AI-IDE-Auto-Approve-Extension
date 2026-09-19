@@ -233,9 +233,9 @@ npx @vscode/vsce package --no-dependencies
 
 Because this extension is distributed directly on GitHub instead of the closed VS Code Marketplace, it includes an **autonomous self-updating engine**:
 
-- ⏰ **Silent Background Polling**: Automatically checks GitHub Releases 30 seconds after IDE launch, then every 4 hours. Never slows down editor startup.
+- ⏰ **Silent Background Polling**: Automatically checks GitHub Releases 8 seconds after IDE launch, then every 4 hours. Never slows down editor startup.
 - 🚀 **1-Click Interactive Update**: When a new version is released on GitHub, an interactive prompt lets you update immediately with progress reporting.
-- ⚡ **Zero Marketplace Dependency**: Directly downloads the `.vsix` release asset and executes VS Code's internal `workbench.extensions.installExtension` command.
+- ⚡ **Zero Marketplace Dependency**: Directly downloads the `.vsix` release asset and executes host IDE install commands with multi-CLI fallback (`antigravity`, `kiro`, `code`).
 - 🔍 **Manual Check Anytime**: Press `Ctrl+Shift+P` → select `AI IDE Auto-Approve: Check for Updates`.
 - 🎛️ **Fully Configurable**: Turn automatic checks on or off anytime via `"aiIdeAutoApprove.autoUpdateCheck"`.
 

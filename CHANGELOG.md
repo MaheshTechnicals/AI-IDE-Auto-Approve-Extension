@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 - `processedActionIds` cache limit raised from 500 → 1000 entries for reduced eviction frequency.
+- **Resilient Multi-IDE Auto-Updater**:
+  - Initial check delay reduced from 30s to 8s for instant discovery on IDE launch.
+  - Multi-tier installation: internal VS Code commands (`workbench.extensions.installExtension`, `antigravity.installExtension`, `kiro.installExtension`) with automatic CLI fallback (`antigravity --install-extension`, `kiro --install-extension`, `code --install-extension`).
+  - Dynamic disk-based `package.json` version reading to eliminate stale version fallback.
 - **91 automated unit tests** passing (100% pass rate).
 
 ---

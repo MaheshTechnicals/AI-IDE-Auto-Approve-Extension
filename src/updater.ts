@@ -4,6 +4,7 @@ import * as http from 'http';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import * as cp from 'child_process';
 import { URL } from 'url';
 
 export const GITHUB_OWNER = 'MaheshTechnicals';
@@ -53,16 +54,36 @@ export function compareVersions(a: string, b: string): number {
  * Gets current extension version from context or VS Code extensions registry.
  */
 export function getCurrentVersion(): string {
+  // Primary: from active extension context (most reliable)
   if (extensionContext?.extension?.packageJSON?.version) {
-    return extensionContext.extension.packageJSON.version;
+    return String(extensionContext.extension.packageJSON.version);
   }
-  const ext =
-    vscode.extensions?.getExtension('MaheshTechnicals.ai-ide-auto-approve') ||
-    vscode.extensions?.getExtension('MaheshTechnicals.kiro-auto-approve');
-  if (ext?.packageJSON?.version) {
-    return ext.packageJSON.version;
+  // Secondary: scan all known extension IDs
+  const candidates = [
+    'MaheshTechnicals.ai-ide-auto-approve',
+    'MaheshTechnicals.kiro-auto-approve',
+    'mahesh-technicals.ai-ide-auto-approve'
+  ];
+  for (const id of candidates) {
+    const ext = vscode.extensions?.getExtension(id);
+    if (ext?.packageJSON?.version) {
+      return String(ext.packageJSON.version);
+    }
   }
-  return '1.1.0';
+  // Tertiary: read package.json from extension install path
+  try {
+    if (extensionContext?.extensionPath) {
+      const pkgPath = path.join(extensionContext.extensionPath, 'package.json');
+      if (fs.existsSync(pkgPath)) {
+        const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8')) as { version?: string };
+        if (pkg.version) {
+          return pkg.version;
+        }
+      }
+    }
+  } catch {}
+  // Hard fallback — keep in sync with package.json version
+  return '1.2.0';
 }
 
 /**
@@ -231,10 +252,52 @@ export async function performUpdate(
           `Auto-Updater: Installing VSIX (${(stat.size / 1024 / 1024).toFixed(2)} MB)...`
         );
 
-        await vscode.commands.executeCommand(
+        // Try multiple install commands for cross-IDE compatibility
+        // (Antigravity and Kiro may not support workbench.extensions.installExtension)
+        let installSucceeded = false;
+        const installCommands = [
           'workbench.extensions.installExtension',
-          vscode.Uri.file(vsixPath)
-        );
+          'antigravity.installExtension',
+          'kiro.installExtension'
+        ];
+
+        for (const installCmd of installCommands) {
+          try {
+            await vscode.commands.executeCommand(installCmd, vscode.Uri.file(vsixPath));
+            installSucceeded = true;
+            break;
+          } catch {
+            // Try next command
+          }
+        }
+
+        if (!installSucceeded) {
+          // Fallback: try host IDE CLI directly
+          const cliBinaries = ['antigravity', 'kiro', 'code'];
+          for (const bin of cliBinaries) {
+            try {
+              await new Promise<void>((resolvePromise, rejectPromise) => {
+                cp.exec(`${bin} --install-extension "${vsixPath}" --force`, (err) => {
+                  if (err) {
+                    rejectPromise(err);
+                  } else {
+                    resolvePromise();
+                  }
+                });
+              });
+              installSucceeded = true;
+              break;
+            } catch {
+              // Try next CLI binary
+            }
+          }
+        }
+
+        if (!installSucceeded) {
+          throw new Error(
+            `Could not install VSIX automatically in this IDE. Please install manually: ${vsixPath}`
+          );
+        }
 
         progress.report({ message: 'Update installed successfully!', increment: 30 });
         logger?.info(`Auto-Updater: Successfully installed v${newVersion}!`);
@@ -376,10 +439,11 @@ export function startAutoUpdater(
 ): void {
   setExtensionContext(context);
 
-  // Check after a 30-second delay on activation (never blocks startup)
+  // Check after a short delay on activation so startup is not blocked.
+  // 8 seconds is enough for the IDE UI to settle and show the notification.
   const initialTimer = setTimeout(() => {
     checkForUpdate(logger, false);
-  }, 30000);
+  }, 8000);
 
   // Periodic check every 4 hours
   const periodicTimer = setInterval(() => {
@@ -392,6 +456,6 @@ export function startAutoUpdater(
   );
 
   logger?.info(
-    'Auto-Updater: GitHub Release auto-updater initialized (checks every 4 hours, silent background updates).'
+    'Auto-Updater: GitHub Release auto-updater initialized (initial check in 8s, then every 4 hours).'
   );
 }

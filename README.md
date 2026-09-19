@@ -15,8 +15,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20·%20macOS%20·%20Windows-333333.svg?style=for-the-badge&logo=windows-terminal&logoColor=white)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension)
 
-[![Version](https://img.shields.io/badge/v1.1.0-stable-brightgreen.svg?style=flat-square)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)
-[![Tests](https://img.shields.io/badge/tests-80%20passing-brightgreen.svg?style=flat-square)](test/)
+[![Version](https://img.shields.io/badge/v1.2.0-stable-brightgreen.svg?style=flat-square)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/latest)
+[![Tests](https://img.shields.io/badge/tests-91%20passing-brightgreen.svg?style=flat-square)](test/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6.svg?style=flat-square&logo=typescript&logoColor=white)](tsconfig.json)
 [![Engine](https://img.shields.io/badge/VS%20Code%20Engine-%5E1.85.0-007ACC.svg?style=flat-square&logo=visual-studio-code&logoColor=white)](package.json)
 [![GitHub Stars](https://img.shields.io/github/stars/MaheshTechnicals/AI-IDE-Auto-Approve-Extension?style=flat-square&logo=github)](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension)
@@ -191,17 +191,17 @@ gh release download --repo MaheshTechnicals/AI-IDE-Auto-Approve-Extension --patt
 </tr>
 <tr>
 <td><strong>Google Antigravity</strong></td>
-<td><code>antigravity --install-extension ai-ide-auto-approve-1.1.0.vsix --force</code></td>
+<td><code>antigravity --install-extension ai-ide-auto-approve-1.2.0.vsix --force</code></td>
 <td>Extensions sidebar → <code>...</code> → "Install from VSIX..."</td>
 </tr>
 <tr>
 <td><strong>Kiro IDE</strong></td>
-<td><code>kiro --install-extension ai-ide-auto-approve-1.1.0.vsix --force</code></td>
+<td><code>kiro --install-extension ai-ide-auto-approve-1.2.0.vsix --force</code></td>
 <td>Extensions (<code>Ctrl+Shift+X</code>) → <code>...</code> → "Install from VSIX..."</td>
 </tr>
 <tr>
 <td><strong>VS Code</strong></td>
-<td><code>code --install-extension ai-ide-auto-approve-1.1.0.vsix --force</code></td>
+<td><code>code --install-extension ai-ide-auto-approve-1.2.0.vsix --force</code></td>
 <td>Extensions (<code>Ctrl+Shift+X</code>) → <code>...</code> → "Install from VSIX..."</td>
 </tr>
 </table>
@@ -342,7 +342,8 @@ Press **`F5`** in your IDE to launch the Extension Development Host with live de
 
 | Version | Highlights |
 |---|---|
-| [**v1.1.0**](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/tag/v1.1.0) | 🌍 Cross-platform hardening: macOS Application Support, Linux XDG_CONFIG_HOME, 5-candidate path search |
+| [**v1.2.0**](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/tag/v1.2.0) | ✨ Approval shine animation, offset-based file reading, activity counter bug fixes, 91 tests |
+| [**v1.1.0**](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/tag/v1.1.0) | 🔄 Built-in auto-updater (GitHub Releases), manual update check, 91 tests |
 | [**v1.0.0**](https://github.com/MaheshTechnicals/AI-IDE-Auto-Approve-Extension/releases/tag/v1.0.0) | 🚀 Major milestone: 180+ grants, native Protobuf USS injection, 80 tests |
 | **v0.4.0** | 🔄 Rebrand to "AI IDE Auto-Approve", dual namespace support |
 | **v0.3.0** | 🔗 Google Antigravity IDE integration, dual-engine architecture |

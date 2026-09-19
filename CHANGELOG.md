@@ -7,7 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.0] - 2026-09-18
+## [1.2.0] - 2026-09-19
+
+### ✨ Smart Activity Tracking & Approval Shine Animation
+
+#### Fixed
+- **Spurious Activity Counter on Hover / Idle**: The status bar activity counter was incorrectly incrementing on every hover event and during idle poll cycles. Root cause: the engine was re-reading the last 25 lines of transcript files on every 2-second poll, causing old completed actions to be re-counted as new approvals.
+- **Off → On Reset Bug**: Toggling the extension OFF then ON was not reliably resetting the activity counter to 0. The `stop()` method now directly broadcasts `onStateChange(false, ...)` with zeroed stats, and the `toggle()` ON path explicitly calls `resetActivityState()` before starting — guaranteeing the status bar always shows **0** on fresh enable.
+- **Processed Action ID Cache Eviction Re-counting**: `processedActionIds` was bounded to 500 entries; evicted IDs could be re-read from the transcript file and counted again, producing phantom increments.
+
+#### Added
+- **Offset-Based File Reading** (`getNewAntigravityActions()`, `getNewKiroActions()`): Engine now snapshots the file EOF when first enabled and only reads bytes appended *after* that point. Zero old actions ever re-processed — activity counter only reflects genuine new approvals.
+- **Permanent `seenActionIds` Set**: A permanent per-session dedup set that is never evicted during an ON session. Every unique action ID is counted exactly once, regardless of polling frequency.
+- **✨ Approval Shine Animation** (`StatusBarController.triggerApprovalFlash()`): The status bar button now plays a smooth 5-pulse "shine" animation on every auto-approval:
+  - Spinning lightning icon: `$(zap~spin)` on glow frames
+  - Warm highlight background: VS Code `statusBarItem.warningBackground` ThemeColor
+  - 110ms per frame — ~1.1 second total smooth effect
+  - Stacking-safe: rapid approvals extend the current animation instead of stacking
+  - Animation-aware `update()`: tooltip refreshes mid-animation without interrupting the visual effect
+- **`onApproval` Engine Callback**: New optional callback on `AutoApproveEngine` constructor, called on every newly approved action in both Kiro and Antigravity polling paths.
+
+#### Changed
+- `processedActionIds` cache limit raised from 500 → 1000 entries for reduced eviction frequency.
+- **91 automated unit tests** passing (100% pass rate).
+
+---
+
+
 
 ### 🌍 Cross-Platform Hardening & Universal Path Resolution
 

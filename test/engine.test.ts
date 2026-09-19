@@ -83,12 +83,12 @@ describe('AutoApproveEngine Unit Tests', () => {
     vscode.commands.executedCommands = [];
 
     const engineAny = engine as unknown as {
-      getRecentAntigravityActions: () => Array<{ id: string; text: string; raw: unknown; status: string }>;
+      getNewAntigravityActions: () => Array<{ id: string; text: string; raw: unknown; status: string }>;
       pollAntigravityNative: (commands: string[], safetyEnabled: boolean) => Promise<void>;
     };
 
-    // Mock unsafe recent actions
-    engineAny.getRecentAntigravityActions = () => [
+    // Mock unsafe new actions (offset-based reader returns new actions)
+    engineAny.getNewAntigravityActions = () => [
       {
         id: 'agy-test-1',
         text: 'run_command sudo rm -rf /',
@@ -108,11 +108,11 @@ describe('AutoApproveEngine Unit Tests', () => {
     vscode.commands.executedCommands = [];
 
     const engineAny = engine as unknown as {
-      getRecentAntigravityActions: () => Array<{ id: string; text: string; raw: unknown; status: string }>;
+      getNewAntigravityActions: () => Array<{ id: string; text: string; raw: unknown; status: string }>;
       pollAntigravityNative: (commands: string[], safetyEnabled: boolean) => Promise<void>;
     };
 
-    engineAny.getRecentAntigravityActions = () => [
+    engineAny.getNewAntigravityActions = () => [
       {
         id: 'agy-test-2',
         text: 'run_command npm test',

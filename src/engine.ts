@@ -41,12 +41,20 @@ export class AutoApproveEngine {
   private onStateChange: (enabled: boolean, safetyEnabled: boolean, stats?: StatusBarStats) => void;
   private skippedIds: Set<string> = new Set();
   private processedActionIds: Set<string> = new Set();
+  // Permanent cross-session dedup set — never evicted within a single ON session.
+  // Cleared only when the engine is stopped/toggled so activity truly resets to 0.
+  private seenActionIds: Set<string> = new Set();
 
   // Session caching for high-efficiency disk I/O
   private cachedSessionFile: string | null = null;
   private cachedSessionLastScan: number = 0;
   private cachedAntigravityFile: string | null = null;
   private cachedAntigravityLastScan: number = 0;
+  // File offset tracking — only read lines appended AFTER the engine was started
+  private antigravityFileOffset: number = 0;
+  private kiroFileOffset: number = 0;
+  private antigravityTrackedFile: string | null = null;
+  private kiroTrackedFile: string | null = null;
 
   constructor(
     safetyChecker: SafetyChecker,
@@ -161,6 +169,12 @@ export class AutoApproveEngine {
   public resetActivityState(): void {
     this.skippedIds.clear();
     this.processedActionIds.clear();
+    this.seenActionIds.clear();
+    // Reset file offsets so next session starts fresh from current EOF
+    this.antigravityFileOffset = 0;
+    this.kiroFileOffset = 0;
+    this.antigravityTrackedFile = null;
+    this.kiroTrackedFile = null;
     this.logger.resetActivity();
     this.onStateChange(this.isRunning, this.getConfig().safetyEnabled, this.logger.getStats());
   }
@@ -172,7 +186,16 @@ export class AutoApproveEngine {
     }
     this.isRunning = false;
     this.isPolling = false;
-    this.resetActivityState();
+    // Clear tracking state (resets activity to 0)
+    this.skippedIds.clear();
+    this.processedActionIds.clear();
+    this.seenActionIds.clear();
+    this.antigravityFileOffset = 0;
+    this.kiroFileOffset = 0;
+    this.antigravityTrackedFile = null;
+    this.kiroTrackedFile = null;
+    this.logger.resetActivity();
+    this.onStateChange(false, this.getConfig().safetyEnabled, this.logger.getStats());
   }
 
   public async toggle(): Promise<boolean> {
@@ -188,14 +211,15 @@ export class AutoApproveEngine {
         .update('enabled', targetState, vscode.ConfigurationTarget.Global);
     } catch {}
 
-    this.resetActivityState();
-
     if (targetState) {
+      // Turning ON: reset all state to 0 first, then start fresh
+      this.resetActivityState();
       this.start();
       const modeText = config.safetyEnabled ? 'with Safety Checks' : 'ALL APPROVED (No Restrictions)';
       vscode.window.showInformationMessage(`AI IDE Auto-Approve: ENABLED (${modeText})`);
       this.logger.info(`AI IDE Auto-Approve toggled ON by user (${modeText}). Activity reset to 0.`);
     } else {
+      // Turning OFF: stop() already resets everything and broadcasts 0 to status bar
       this.stop();
       vscode.window.showInformationMessage('AI IDE Auto-Approve: PAUSED / OFF');
       this.logger.info('AI IDE Auto-Approve toggled OFF by user. Activity reset to 0.');
@@ -325,67 +349,63 @@ export class AutoApproveEngine {
   }
 
   private async pollKiroNative(approveCommandId: string, safetyEnabled: boolean): Promise<void> {
-    // 1. Inspect recent Kiro tool actions from session
-    const recentActions = this.getRecentKiroActions();
+    // 1. Inspect NEW Kiro tool actions since last poll (offset-based, not full re-read)
+    const newActions = this.getNewKiroActions();
 
-    if (recentActions.length > 0) {
-      let anyUnsafe = false;
+    let anyUnsafe = false;
 
-      for (const action of recentActions) {
-        const actionId = action.id;
+    for (const action of newActions) {
+      const actionId = action.id;
 
-        // Check if action was already evaluated
-        if (!this.processedActionIds.has(actionId)) {
-          this.processedActionIds.add(actionId);
-
-          // Bound processed cache to prevent memory growth
-          if (this.processedActionIds.size > 500) {
-            const firstKey = this.processedActionIds.values().next().value;
-            if (firstKey) {
-              this.processedActionIds.delete(firstKey);
-            }
-          }
-
-          if (safetyEnabled) {
-            const safetyCheck = this.safetyChecker.check(action.text, true);
-
-            if (!safetyCheck.safe) {
-              this.skippedIds.add(actionId);
-              if (this.skippedIds.size > 500) {
-                const firstKey = this.skippedIds.values().next().value;
-                if (firstKey) {
-                  this.skippedIds.delete(firstKey);
-                }
-              }
-              this.logger.recordDecision(
-                'SKIPPED',
-                action.text,
-                `Banned pattern matched: ${safetyCheck.matchedPattern}`,
-                action.raw
-              );
-              anyUnsafe = true;
-            } else {
-              this.logger.recordDecision('APPROVED', action.text, 'Passed safety check', action.raw);
-            }
-          } else {
-            this.logger.recordDecision('APPROVED', action.text, 'All Approved (No Restrictions)', action.raw);
-          }
-        } else if (safetyEnabled && this.skippedIds.has(actionId)) {
+      // seenActionIds is permanent within an ON session — prevents double-counting
+      if (this.seenActionIds.has(actionId)) {
+        if (safetyEnabled && this.skippedIds.has(actionId)) {
           anyUnsafe = true;
+        }
+        continue;
+      }
+
+      this.seenActionIds.add(actionId);
+      this.processedActionIds.add(actionId);
+
+      // Bound rolling cache (processedActionIds) to prevent unbounded memory growth
+      if (this.processedActionIds.size > 1000) {
+        const firstKey = this.processedActionIds.values().next().value;
+        if (firstKey) {
+          this.processedActionIds.delete(firstKey);
         }
       }
 
-      // If ANY pending action in the batch is unsafe, block the approval command
-      if (anyUnsafe) {
-        return;
+      if (safetyEnabled) {
+        const safetyCheck = this.safetyChecker.check(action.text, true);
+
+        if (!safetyCheck.safe) {
+          this.skippedIds.add(actionId);
+          this.logger.recordDecision(
+            'SKIPPED',
+            action.text,
+            `Banned pattern matched: ${safetyCheck.matchedPattern}`,
+            action.raw
+          );
+          anyUnsafe = true;
+        } else {
+          this.logger.recordDecision('APPROVED', action.text, 'Passed safety check', action.raw);
+        }
+      } else {
+        this.logger.recordDecision('APPROVED', action.text, 'All Approved (No Restrictions)', action.raw);
       }
+    }
+
+    // If ANY unseen unsafe action is blocking, do not fire approval
+    if (anyUnsafe) {
+      return;
     }
 
     // 2. Trigger Kiro approve/accept execution command
     try {
       await vscode.commands.executeCommand(approveCommandId);
     } catch {
-      // Expected if no confirmation is currently waiting
+      // Expected if no pending confirmation exists
     }
   }
 
@@ -396,66 +416,65 @@ export class AutoApproveEngine {
     antigravityCommands: string[],
     safetyEnabled: boolean
   ): Promise<void> {
-    const recentActions = this.getRecentAntigravityActions();
+    // Only read NEW lines appended since the last poll (offset-based approach)
+    const newActions = this.getNewAntigravityActions();
 
-    if (recentActions.length > 0) {
-      let anyUnsafe = false;
+    let anyUnsafe = false;
 
-      for (const action of recentActions) {
-        const actionId = action.id;
+    for (const action of newActions) {
+      const actionId = action.id;
 
-        if (!this.processedActionIds.has(actionId)) {
-          this.processedActionIds.add(actionId);
-
-          if (this.processedActionIds.size > 500) {
-            const firstKey = this.processedActionIds.values().next().value;
-            if (firstKey) {
-              this.processedActionIds.delete(firstKey);
-            }
-          }
-
-          if (safetyEnabled) {
-            const safetyCheck = this.safetyChecker.check(action.text, true);
-
-            if (!safetyCheck.safe) {
-              this.skippedIds.add(actionId);
-              if (this.skippedIds.size > 500) {
-                const firstKey = this.skippedIds.values().next().value;
-                if (firstKey) {
-                  this.skippedIds.delete(firstKey);
-                }
-              }
-              this.logger.recordDecision(
-                'SKIPPED',
-                action.text,
-                `Banned pattern matched (Antigravity): ${safetyCheck.matchedPattern}`,
-                action.raw
-              );
-              anyUnsafe = true;
-            } else {
-              this.logger.recordDecision(
-                'APPROVED',
-                action.text,
-                'Passed safety check (Antigravity)',
-                action.raw
-              );
-            }
-          } else {
-            this.logger.recordDecision(
-              'APPROVED',
-              action.text,
-              'All Approved (Antigravity Full Autonomy)',
-              action.raw
-            );
-          }
-        } else if (safetyEnabled && this.skippedIds.has(actionId)) {
+      // seenActionIds is permanent within an ON session — prevents double-counting
+      if (this.seenActionIds.has(actionId)) {
+        if (safetyEnabled && this.skippedIds.has(actionId)) {
           anyUnsafe = true;
+        }
+        continue;
+      }
+
+      this.seenActionIds.add(actionId);
+      this.processedActionIds.add(actionId);
+
+      // Bound rolling cache (processedActionIds) to prevent unbounded memory growth
+      if (this.processedActionIds.size > 1000) {
+        const firstKey = this.processedActionIds.values().next().value;
+        if (firstKey) {
+          this.processedActionIds.delete(firstKey);
         }
       }
 
-      if (anyUnsafe) {
-        return;
+      if (safetyEnabled) {
+        const safetyCheck = this.safetyChecker.check(action.text, true);
+
+        if (!safetyCheck.safe) {
+          this.skippedIds.add(actionId);
+          this.logger.recordDecision(
+            'SKIPPED',
+            action.text,
+            `Banned pattern matched (Antigravity): ${safetyCheck.matchedPattern}`,
+            action.raw
+          );
+          anyUnsafe = true;
+        } else {
+          this.logger.recordDecision(
+            'APPROVED',
+            action.text,
+            'Passed safety check (Antigravity)',
+            action.raw
+          );
+        }
+      } else {
+        this.logger.recordDecision(
+          'APPROVED',
+          action.text,
+          'All Approved (Antigravity Full Autonomy)',
+          action.raw
+        );
       }
+    }
+
+    if (anyUnsafe) {
+      return;
     }
 
     // Ensure persistent global permissions in Antigravity's Unified State Sync
@@ -550,9 +569,11 @@ export class AutoApproveEngine {
   }
 
   /**
-   * Reads recent tool actions from the active Antigravity session.
+   * Reads ONLY NEW tool actions from the active Antigravity session (offset-based).
+   * When the engine starts or file changes, we snapshot the current EOF so we only
+   * process lines that were genuinely appended AFTER the engine was enabled.
    */
-  private getRecentAntigravityActions(): ToolActionItem[] {
+  private getNewAntigravityActions(): ToolActionItem[] {
     const activeFile = this.findActiveAntigravityTranscript();
     if (!activeFile) {
       return [];
@@ -561,26 +582,39 @@ export class AutoApproveEngine {
     let fd: number | null = null;
     try {
       const stat = fs.statSync(activeFile);
-      const readSize = Math.min(stat.size, 65536);
-      if (readSize === 0) {
+      const fileSize = stat.size;
+
+      // If this is a new/different file, record its current EOF as our starting offset.
+      // This prevents old completed actions from being counted when the engine turns on.
+      if (this.antigravityTrackedFile !== activeFile) {
+        this.antigravityTrackedFile = activeFile;
+        this.antigravityFileOffset = fileSize; // Start reading only NEW content
         return [];
       }
 
+      // Nothing new appended since last check
+      if (fileSize <= this.antigravityFileOffset) {
+        return [];
+      }
+
+      const readSize = Math.min(fileSize - this.antigravityFileOffset, 131072); // max 128 KB of new content
       fd = fs.openSync(activeFile, 'r');
       const buffer = Buffer.alloc(readSize);
-      fs.readSync(fd, buffer, 0, readSize, Math.max(0, stat.size - readSize));
+      const bytesRead = fs.readSync(fd, buffer, 0, readSize, this.antigravityFileOffset);
+
+      // Advance the offset by the bytes we successfully read
+      this.antigravityFileOffset += bytesRead;
 
       const actions: ToolActionItem[] = [];
-      const lines = buffer.toString('utf-8').trim().split('\n');
+      const lines = buffer.slice(0, bytesRead).toString('utf-8').split('\n');
 
-      const startIndex = Math.max(0, lines.length - 25);
-      for (let i = lines.length - 1; i >= startIndex; i--) {
-        const line = lines[i].trim();
-        if (!line) {
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) {
           continue;
         }
         try {
-          const data = JSON.parse(line);
+          const data = JSON.parse(trimmed);
           if (Array.isArray(data.tool_calls) && data.tool_calls.length > 0) {
             for (let idx = 0; idx < data.tool_calls.length; idx++) {
               const tc = data.tool_calls[idx];
@@ -602,6 +636,8 @@ export class AutoApproveEngine {
       return actions;
     } catch (err) {
       this.cachedAntigravityFile = null;
+      this.antigravityTrackedFile = null;
+      this.antigravityFileOffset = 0;
       this.logger.warn(`Error reading Antigravity transcript: ${String(err)}`);
       return [];
     } finally {
@@ -699,10 +735,11 @@ export class AutoApproveEngine {
   }
 
   /**
-   * Reads recent tool actions from the active session.
-   * Uses safe try/finally to prevent file descriptor leaks.
+   * Reads ONLY NEW tool actions from the active Kiro session (offset-based).
+   * When the engine starts or file changes, we snapshot the current EOF so we only
+   * process lines that were genuinely appended AFTER the engine was enabled.
    */
-  private getRecentKiroActions(): ToolActionItem[] {
+  private getNewKiroActions(): ToolActionItem[] {
     const activeFile = this.findActiveSessionFile();
     if (!activeFile) {
       return [];
@@ -711,35 +748,46 @@ export class AutoApproveEngine {
     let fd: number | null = null;
     try {
       const stat = fs.statSync(activeFile);
-      const readSize = Math.min(stat.size, 65536);
-      if (readSize === 0) {
+      const fileSize = stat.size;
+
+      // If this is a new/different file, record its current EOF as our starting offset.
+      // This prevents old completed actions from being counted when the engine turns on.
+      if (this.kiroTrackedFile !== activeFile) {
+        this.kiroTrackedFile = activeFile;
+        this.kiroFileOffset = fileSize; // Start reading only NEW content
         return [];
       }
 
+      // Nothing new appended since last check
+      if (fileSize <= this.kiroFileOffset) {
+        return [];
+      }
+
+      const readSize = Math.min(fileSize - this.kiroFileOffset, 131072); // max 128 KB of new content
       fd = fs.openSync(activeFile, 'r');
       const buffer = Buffer.alloc(readSize);
-      fs.readSync(fd, buffer, 0, readSize, Math.max(0, stat.size - readSize));
+      const bytesRead = fs.readSync(fd, buffer, 0, readSize, this.kiroFileOffset);
+
+      // Advance the offset by the bytes we successfully read
+      this.kiroFileOffset += bytesRead;
 
       const actions: ToolActionItem[] = [];
-      const lines = buffer.toString('utf-8').trim().split('\n');
+      const lines = buffer.slice(0, bytesRead).toString('utf-8').split('\n');
 
-      // Inspect up to the last 25 lines
-      const startIndex = Math.max(0, lines.length - 25);
-      for (let i = lines.length - 1; i >= startIndex; i--) {
-        const line = lines[i].trim();
-        if (!line) {
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) {
           continue;
         }
         try {
-          const data = JSON.parse(line);
+          const data = JSON.parse(trimmed);
           if (data.payload && data.payload.type === 'tool_call') {
-            const status = String(data.payload.status || 'pending');
             const displayText = SafetyChecker.extractText(data.payload);
             actions.push({
               id: data.id || data.payload.toolCallId || String(data.timestamp),
               text: displayText,
               raw: data.payload,
-              status,
+              status: String(data.payload.status || 'pending'),
               source: 'kiro'
             });
           }
@@ -748,9 +796,10 @@ export class AutoApproveEngine {
 
       return actions;
     } catch (err) {
-      // Invalidate cache if reading failed
       this.cachedSessionFile = null;
-      this.logger.warn(`Error reading session messages: ${String(err)}`);
+      this.kiroTrackedFile = null;
+      this.kiroFileOffset = 0;
+      this.logger.warn(`Error reading Kiro session messages: ${String(err)}`);
       return [];
     } finally {
       if (fd !== null) {
